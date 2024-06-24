@@ -341,20 +341,38 @@ $form.Add_FormClosing({
 
 # Adiciona um campo de texto para o código 2FA
 $label = New-Object System.Windows.Forms.Label
-$label.Text = "Digite o código 2FA:"
-$label.AutoSize = $true
+$label.Text = "Digite o código 2FA"
+$label.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do Label
 $label.Location = New-Object System.Drawing.Point(10,10)
-$form.Controls.Add($label)
+$label.BackColor = [System.Drawing.Color]::FromArgb(30, 144, 255)
+$label.ForeColor = [System.Drawing.Color]::White
+$label.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$label.Font = New-Object System.Drawing.Font("Helvetica", 10, [System.Drawing.FontStyle]::Regular)
+$label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter # Centraliza o texto
+$form.Controls.Add($label)S
 
 $textBox = New-Object System.Windows.Forms.TextBox
-$textBox.Location = New-Object System.Drawing.Point(10,40)
-$textBox.Width = 200
+$textBox.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do TextBox
+$textBox.Location = New-Object System.Drawing.Point(10,50) # Reduz o espaçamento
+$textBox.BackColor = [System.Drawing.Color]::FromArgb(50, 50, 50)
+$textBox.ForeColor = [System.Drawing.Color]::White
+$textBox.Font = New-Object System.Drawing.Font("Helvetica", 10)
 $form.Controls.Add($textBox)
 
 # Adiciona um botão para enviar o código
 $button = New-Object System.Windows.Forms.Button
 $button.Text = "&Autenticar"
-$button.Location = New-Object System.Drawing.Point(10,80)
+$button.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do Button
+$button.Location = New-Object System.Drawing.Point(10,90) # Reduz o espaçamento
+$button.BackColor = [System.Drawing.Color]::FromArgb(30, 144, 255)
+$button.ForeColor = [System.Drawing.Color]::White
+$button.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$button.Font = New-Object System.Drawing.Font("Helvetica", 10, [System.Drawing.FontStyle]::Regular)
+$form.Controls.Add($button)
+    
+# Ajusta a transparência do formulário
+$form.BackColor = [System.Drawing.Color]::FromArgb(0, 0, 0, 0)
+$form.TransparencyKey = $form.BackColor
 
 # Centralizar controles no formulário
 $yOffset = ($form.ClientSize.Height - ($label.Height + $textBox.Height + $button.Height + 40)) / 2 + $titleBar.Height
