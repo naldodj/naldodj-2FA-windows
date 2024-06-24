@@ -30,12 +30,16 @@ function Generate-2FASecret {
 
     # Criar a credencial no Windows Credential Manager
     $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $credName, $secretKeySecureString
-    $credential | Export-Clixml -Path "C:\tools\2FA\$credName.xml"
+    $credentialPath="C:\2FA\"
+    if (-not (Test-Path -Path $credentialPath -PathType Container)) {
+        [System.IO.Directory]::CreateDirectory($credentialPath)
+    }    
+    $credential | Export-Clixml -Path "$credentialPath$credName.xml"
 
     # Exibir a chave secreta para configurar o aplicativo autenticador
     Write-Output "Chave secreta para configurar no aplicativo autenticador: $base32Secret"
 }
 
 # Exemplo de uso para gerar e armazenar a chave secreta
-$credName = "DNA-TECH-01-2FA"
+$credName = [System.Net.Dns]::GetHostName()
 Generate-2FASecret -credName $credName

@@ -23,7 +23,8 @@ function Verify-2FACode {
     )
 
     # Recuperar a chave secreta do Windows Credential Manager
-    $credential = Import-Clixml -Path "C:\tools\2FA\$credName.xml"
+    $credentialPath="C:\2FA\"
+    $credential = Import-Clixml -Path "$credentialPath$credName.xml"
     $base32Secret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($credential.Password))
     $secretKey = [OtpNet.Base32Encoding]::ToBytes($base32Secret)
 
@@ -39,17 +40,17 @@ function Verify-2FACode {
         } else {
             Write-Output "Código 2FA inválido. Acesso negado."
             # Desligar o computador
-            shutdown.exe /s /t 0
+            #shutdown.exe /s /t 0
         }
     } catch {
         Write-Output "Erro ao verificar o código 2FA: $_"
         # Desligar o computador em caso de erro
-        shutdown.exe /s /t 0
+        #shutdown.exe /s /t 0
     }
 }
 
 # Exemplo de uso para verificar o código 2FA no processo de autenticação do Windows
-$credName = "DNA-TECH-01-2FA"
+$credName = [System.Net.Dns]::GetHostName()
 Write-Host "Digite o código 2FA gerado pelo aplicativo autenticador (por exemplo, Microsoft Authenticator):"
 $code = Read-Host
 

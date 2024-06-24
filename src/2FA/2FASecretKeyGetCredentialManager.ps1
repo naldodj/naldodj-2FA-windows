@@ -233,7 +233,8 @@ function Verify-2FACode {
     )
 
     # Recuperar a chave secreta do Windows Credential Manager
-    $credential = Import-Clixml -Path "C:\tools\2FA\$credName.xml"
+    $credentialPath="C:\2FA\"
+    $credential = Import-Clixml -Path "$credentialPath$credName.xml"
     $base32Secret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($credential.Password))
     $secretKey = [OtpNet.Base32Encoding]::ToBytes($base32Secret)
 
@@ -271,7 +272,7 @@ function Center-Control {
 }
 
 # Credencial para verificar o código 2FA no processo de autenticação do Windows
-$credName = "DNA-TECH-01-2FA"
+$credName = [System.Net.Dns]::GetHostName()
 
 # Cria a janela
 $form = New-Object CustomForm
