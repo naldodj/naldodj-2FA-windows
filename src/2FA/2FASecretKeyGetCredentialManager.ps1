@@ -70,12 +70,6 @@ function Enable-TaskManager {
     Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableTaskMgr" -ErrorAction SilentlyContinue
 }
 
-function Enable-Hotkeys {
-    foreach ($id in $global:hotkeys.Keys) {
-        [Win32Functions]::UnregisterHotKey([IntPtr]::Zero, $id)
-    }
-}
-
 # Desabilita o Alt+Tab, Ctrl+Alt+Del, etc.
 function Disable-TaskManager {
     $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
@@ -86,6 +80,34 @@ function Disable-TaskManager {
 }
 
 Disable-TaskManager
+
+function Enable-WindowsKey {
+    $VK_LWIN = 0x5B
+    $VK_RWIN = 0x5C
+
+    [Win32Functions]::UnregisterHotKey([IntPtr]::Zero, 1)
+    [Win32Functions]::UnregisterHotKey([IntPtr]::Zero, 2)
+}
+
+# Adicionando a função para desabilitar as teclas Windows
+function Disable-WindowsKey {
+    $VK_LWIN = 0x5B
+    $VK_RWIN = 0x5C
+    $MOD_NOREPEAT = 0x4000
+    $MOD_WIN = 0x0008
+
+    [Win32Functions]::RegisterHotKey([IntPtr]::Zero, 1, $MOD_NOREPEAT -bor $MOD_WIN, $VK_LWIN)
+    [Win32Functions]::RegisterHotKey([IntPtr]::Zero, 2, $MOD_NOREPEAT -bor $MOD_WIN, $VK_RWIN)
+}
+
+# Chamar a função para desabilitar as teclas Windows
+Disable-WindowsKey
+
+function Enable-Hotkeys {
+    foreach ($id in $global:hotkeys.Keys) {
+        [Win32Functions]::UnregisterHotKey([IntPtr]::Zero, $id)
+    }
+}
 
 # Função para desabilitar teclas de atalho
 function Disable-Hotkeys {
@@ -98,7 +120,7 @@ function Disable-Hotkeys {
     }
 
     $keys = @("Tab", "Escape", "F4", "LWin", "RWin")
-    $id = 0
+    $id = 3  # Começar com um ID maior para evitar conflito em Disable-WindowsKey
 
     foreach ($key in $keys) {
         $mod = 0
@@ -123,6 +145,7 @@ $assemblyPath = "C:\Program Files\PackageManagement\NuGet\Packages\Otp.NET.1.4.0
 if (-not (Test-Path $assemblyPath)) {
     Enable-TaskManager
     Enable-Hotkeys
+    Enable-WindowsKey
     Write-Error "Arquivo DLL Otp.NET não encontrado em '$assemblyPath'. Verifique o caminho e reinstale o pacote."
     exit 1
 }
@@ -133,6 +156,7 @@ try {
 } catch {
     Enable-TaskManager
     Enable-Hotkeys
+    Enable-WindowsKey
     Write-Error "Erro ao carregar o assembly Otp.NET: $_"
     exit 1
 }
@@ -295,6 +319,7 @@ $button.Add_Click({
     if ($2FACode -eq $true) { # Exemplo de código 2FA
         Enable-TaskManager
         Enable-Hotkeys
+        Enable-WindowsKey
         $form.Close()
     } else {
         [System.Windows.Forms.MessageBox]::Show("Código incorreto. Tente novamente.")
@@ -346,5 +371,6 @@ $form.Add_Shown({
 # Reabilita o Task Manager e as teclas de atalho ao finalizar o script
 Enable-TaskManager
 Enable-Hotkeys
+Enable-WindowsKey
 clear
 Exit 0
