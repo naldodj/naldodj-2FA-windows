@@ -397,19 +397,30 @@ $button.Add_Click({
 $form.Controls.Add($button)
 
 # Timer para capturar e suprimir eventos de tecla
+# Cria um objeto Mutex
+$mutex = New-Object System.Threading.Mutex($false, "Global\MyUniqueMutexName")
+
 $timer = New-Object System.Windows.Forms.Timer
 $timer.Interval = 100 # Intervalo aumentado para 100 milissegundos
 $timer.Add_Tick({
-    $msg = New-Object Win32Functions+MSG
-    if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
-        if ($msg.message -eq 0x0312) { # WM_HOTKEY
-            $key = $global:hotkeys[$msg.wParam.ToInt32()]
-            if ($key -eq "F4" -and ($msg.lParam.ToInt32() -band 0x1)) { # Alt+F4
-                $form.Focus()
+    # Tenta adquirir o mutex
+    if ($mutex.WaitOne(0)) {
+        try {
+            $msg = New-Object Win32Functions+MSG
+            if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
+                if ($msg.message -eq 0x0312) { # WM_HOTKEY
+                    $key = $global:hotkeys[$msg.wParam.ToInt32()]
+                    if ($key -eq "F4" -and ($msg.lParam.ToInt32() -band 0x1)) { # Alt+F4
+                        $form.Focus()
+                    }
+                }
+                [Win32Functions]::TranslateMessage([ref]$msg) | Out-Null
+                [Win32Functions]::DispatchMessage([ref]$msg) | Out-Null
             }
+        } finally {
+            # Libera o mutex
+            $mutex.ReleaseMutex()
         }
-        [Win32Functions]::TranslateMessage([ref]$msg) | Out-Null
-        [Win32Functions]::DispatchMessage([ref]$msg) | Out-Null
     }
 })
 $timer.Start()
