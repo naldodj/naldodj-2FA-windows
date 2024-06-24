@@ -289,7 +289,7 @@ $form.MaximizeBox = $false
 $form.Opacity = 0.9
 
 # Adicionar imagem de fundo
-$form.BackgroundImage = [System.Drawing.Image]::FromFile("F:\GitHub\naldodj-2FA-windows\img\2FABackGround.jpeg")
+$form.BackgroundImage = [System.Drawing.Image]::FromFile("C:\GitHub\naldodj-2FA-windows\img\2FABackGround.jpeg")
 $form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::Stretch
 
 # Criar barra de título personalizada
