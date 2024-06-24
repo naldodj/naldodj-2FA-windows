@@ -383,12 +383,13 @@ $button.Add_Click({
     $2FACode=(Verify-2FACode -credName $credName -code $textBox.Text)
     if ($2FACode -eq $true) { # Exemplo de código 2FA
         $timer.Stop()
+        [System.Windows.Forms.MessageBox]::Show("Código 2FA válido. Acesso permitido.")
         Enable-TaskManager
         Enable-Hotkeys
         Enable-WindowsKey
         $form.Close()
     } else {
-        [System.Windows.Forms.MessageBox]::Show("Código incorreto. Tente novamente.")
+        [System.Windows.Forms.MessageBox]::Show("Código 2FA inválido. Acesso negado.")
         $form.Focus()
         $textBox.Clear()
         $textBox.Focus()
