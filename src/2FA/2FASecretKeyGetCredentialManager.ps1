@@ -382,6 +382,7 @@ $button.Add_Click({
     # Aqui você pode adicionar a lógica de autenticação
     $2FACode=(Verify-2FACode -credName $credName -code $textBox.Text)
     if ($2FACode -eq $true) { # Exemplo de código 2FA
+        $timer.Stop()
         Enable-TaskManager
         Enable-Hotkeys
         Enable-WindowsKey
@@ -397,7 +398,7 @@ $form.Controls.Add($button)
 
 # Timer para capturar e suprimir eventos de tecla
 $timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = 1 # Intervalo em milissegundos
+$timer.Interval = 100 # Intervalo aumentado para 100 milissegundos
 $timer.Add_Tick({
     $msg = New-Object Win32Functions+MSG
     if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
@@ -432,6 +433,8 @@ $form.Add_Shown({
 })
 
 [System.Windows.Forms.Application]::Run($form)
+
+$timer.Stop()
 
 # Reabilita o Task Manager e as teclas de atalho ao finalizar o script
 Enable-TaskManager
