@@ -78,6 +78,10 @@ function Generate-2FASecret {
 $credName = [System.Net.Dns]::GetHostName()
 Generate-2FASecret -credName $credName
 ```
+### `.\2FASecretKeyPutCredentialManager.ps1`
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/6c11d4d7-d9cd-48f2-8b77-505ba64b9fb0)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/cc38f83f-d218-41d9-9305-b23e54c160c4)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/66fb6810-47c6-4c4f-af97-906a2e2d8204)
 
 ## Passo 3: Verificar o Código 2FA
 
@@ -143,6 +147,10 @@ $code = Read-Host
 
 Verify-2FACode -credName $credName -code $code
 ```
+### `.\2FASecretKeyChkCredentialManager.ps1`
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/9f5a0b2c-14fd-463e-a668-367114a1eec3)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/9426267e-ea39-4792-a550-d9ffc9064dce)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/eb8ef4d1-8913-4ecb-81c1-c9cc05826b7b)
 
 ## Passo 4: Integrar o Script ao Processo de Logon do Windows
 
@@ -564,6 +572,7 @@ $button.Add_Click({
     # Aqui você pode adicionar a lógica de autenticação
     $2FACode=(Verify-2FACode -credName $credName -code $textBox.Text)
     if ($2FACode -eq $true) { # Exemplo de código 2FA
+        $timer.Stop()
         Enable-TaskManager
         Enable-Hotkeys
         Enable-WindowsKey
@@ -579,7 +588,7 @@ $form.Controls.Add($button)
 
 # Timer para capturar e suprimir eventos de tecla
 $timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = 1 # Intervalo em milissegundos
+$timer.Interval = 100 # Intervalo aumentado para 100 milissegundos
 $timer.Add_Tick({
     $msg = New-Object Win32Functions+MSG
     if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
@@ -615,6 +624,8 @@ $form.Add_Shown({
 
 [System.Windows.Forms.Application]::Run($form)
 
+$timer.Stop()
+
 # Reabilita o Task Manager e as teclas de atalho ao finalizar o script
 Enable-TaskManager
 Enable-Hotkeys
@@ -623,6 +634,9 @@ clear
 Exit 0
 
 ```
+### `.\2FASecretKeyRunCredentialManager.bat => 2FASecretKeyGetCredentialManager.ps1`
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/1914af19-187e-49a4-bd84-90d62cbe6a25)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/4ae3cd88-68a4-4f49-97a8-834b3779897b)
 
 ### 1. Executar o Script como uma Tarefa
 
