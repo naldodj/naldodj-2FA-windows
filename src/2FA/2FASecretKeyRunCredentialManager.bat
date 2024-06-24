@@ -1,0 +1,1 @@
+pwsh -executionPolicy bypass -file "C:\tools\2FA\2FASecretKeyGetCredentialManager.ps1"
