@@ -5,13 +5,67 @@ Add-Type -AssemblyName "System.Windows.Forms.Primitives"
 Add-Type -TypeDefinition @"
 using System;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 public class CustomForm : Form {
     private const int WM_NCLBUTTONDBLCLK = 0xA3;
     private const int WM_NCLBUTTONDOWN = 0x00A1;
     private const int WM_NCLBUTTONUP = 0x00A2;
     private const int WM_NCMOUSEMOVE = 0x00A0;
-    
+    private const int WM_ACTIVATEAPP = 0x001C;
+    private const int WM_KILLFOCUS = 0x0008;
+
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hMod, uint dwThreadId);
+
+    [DllImport("user32.dll")]
+    private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+    private delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+    private static HookProc proc = HookCallback;
+    private static IntPtr hookId = IntPtr.Zero;
+
+    private const int WH_KEYBOARD_LL = 13;
+    private const int WM_KEYDOWN = 0x0100;
+    private const int VK_LWIN = 0x5B;
+    private const int VK_RWIN = 0x5C;
+
+    public CustomForm() {
+        hookId = SetHook(proc);
+    }
+
+    ~CustomForm() {
+        UnhookWindowsHookEx(hookId);
+    }
+
+    private static IntPtr SetHook(HookProc proc) {
+        using (var curProcess = System.Diagnostics.Process.GetCurrentProcess())
+        using (var curModule = curProcess.MainModule) {
+            return SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
+        }
+    }
+
+    private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
+        if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN) {
+            int vkCode = Marshal.ReadInt32(lParam);
+            if (vkCode == VK_LWIN || vkCode == VK_RWIN) {
+                // Ignore the Windows key press
+                return (IntPtr)1;
+            }
+        }
+        return CallNextHookEx(hookId, nCode, wParam, lParam);
+    }
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern IntPtr GetModuleHandle(string lpModuleName);
+
     protected override void WndProc(ref Message m) {
         if (m.Msg == WM_NCLBUTTONDBLCLK) {
             // Prevent resizing
@@ -23,11 +77,21 @@ public class CustomForm : Form {
             this.WindowState = FormWindowState.Maximized;
             return;
         }
+
+        if (m.Msg == WM_ACTIVATEAPP && m.WParam == IntPtr.Zero) {
+            // If the application is deactivated, bring it back to the foreground
+            SetForegroundWindow(this.Handle);
+        }
+
+        if (m.Msg == WM_KILLFOCUS) {
+            // Prevent losing focus
+            SetForegroundWindow(this.Handle);
+        }
         
         base.WndProc(ref m);
     }
 }
-"@ -ReferencedAssemblies "System.Windows.Forms.dll", "System.Drawing.dll", "System.ComponentModel.Primitives.dll", "System.Windows.Forms.Primitives.dll"
+"@ -ReferencedAssemblies "System.Windows.Forms.dll", "System.Drawing.dll", "System.ComponentModel.Primitives.dll", "System.Windows.Forms.Primitives.dll", "System.Diagnostics.Process.dll"
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
