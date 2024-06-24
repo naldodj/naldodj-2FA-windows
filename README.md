@@ -637,7 +637,7 @@ Usar o `Task Scheduler` para executar o script pode ajudar a evitar que o usuár
    - Na aba `General`, dê um nome à tarefa, por exemplo, "2FAuth".
 ![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/c61778b0-0078-454e-8a44-b568f947d0d7)
    - Na aba `Triggers`, clique em `New` e selecione `At log on` e/ou outras opções para validação.
-![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/adc6762f-d984-4a58-8343-6dd453ff4119)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/b70a5e53-b013-479e-b75b-f7e4f2bd2b6a)
    - Na aba `Actions`, clique em `New` e selecione `Start a program`. No campo `Program/script`, digite `2FASecretKeyRunCredentialManager.bat`.
 ```cmd
 pwsh -executionPolicy bypass -file "C:\tools\2FA\2FASecretKeyGetCredentialManager.ps1"
