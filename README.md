@@ -444,7 +444,8 @@ Essas abordagens ajudam a garantir que o script seja executado de forma consiste
 Com esses passos, você pode adicionar uma camada adicional de segurança ao seu processo de autenticação no Windows, utilizando a autenticação de dois fatores. Isso garante que apenas usuários autorizados, que possuem acesso ao código 2FA gerado pelo aplicativo autenticador, possam acessar o sistema.
 
 ### Exemplo
-![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/c6d746d8-945c-453b-bb10-300d71b68222)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/312da168-7394-4f21-9a5c-120ea3f8b2ed)
+
 
 ### Autenticação 2FA para logon no Windows
 ![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/2e605b77-98aa-422a-8405-dc5af719a11e)
