@@ -8,11 +8,22 @@ using System.Windows.Forms;
 
 public class CustomForm : Form {
     private const int WM_NCLBUTTONDBLCLK = 0xA3;
+    private const int WM_NCLBUTTONDOWN = 0x00A1;
+    private const int WM_NCLBUTTONUP = 0x00A2;
+    private const int WM_NCMOUSEMOVE = 0x00A0;
+    
     protected override void WndProc(ref Message m) {
         if (m.Msg == WM_NCLBUTTONDBLCLK) {
-            // Previne o redimensionamento
+            // Prevent resizing
             return;
         }
+        
+        if (m.Msg == WM_NCLBUTTONDOWN || m.Msg == WM_NCLBUTTONUP || m.Msg == WM_NCMOUSEMOVE) {
+            // Prevent resizing and keep the window maximized
+            this.WindowState = FormWindowState.Maximized;
+            return;
+        }
+        
         base.WndProc(ref m);
     }
 }
