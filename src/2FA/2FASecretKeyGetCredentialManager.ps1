@@ -1,3 +1,20 @@
+<#
+    .SYNOPSIS
+    Retrieves a 2FA secret key from the Windows Credential Manager.
+
+    .DESCRIPTION
+    This script retrieves a stored 2FA (Two-Factor Authentication) secret key from the Windows Credential Manager for the specified target.
+
+    .EXAMPLE
+    .\2FASecretKeyGetCredentialManager.ps1
+
+    .NOTES
+    Written by: Marinaldo de Jesus
+
+    Find me on:
+    * My blog: https://blacktdn.com.br/
+    * Github: https://github.com/naldodj
+#>
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName "System.ComponentModel.Primitives"

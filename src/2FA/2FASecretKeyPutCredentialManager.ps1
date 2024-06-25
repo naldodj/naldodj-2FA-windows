@@ -1,3 +1,21 @@
+<#
+    .SYNOPSIS
+    Stores a 2FA secret key in the Windows Credential Manager.
+
+    .DESCRIPTION
+    This script stores a 2FA (Two-Factor Authentication) secret key in the Windows Credential Manager under the specified target name.
+
+    .EXAMPLE
+    .\2FASecretKeyPutCredentialManager.ps1
+
+    .NOTES
+    Written by: Marinaldo de Jesus
+
+    Find me on:
+    * My blog: https://blacktdn.com.br/
+    * Github: https://github.com/naldodj
+#>
+
 # Caminho para o arquivo DLL Otp.NET (ajuste conforme necessário)
 $assemblyPath = "C:\Program Files\PackageManagement\NuGet\Packages\Otp.NET.1.4.0\lib\netstandard2.0\Otp.NET.dll"
 
