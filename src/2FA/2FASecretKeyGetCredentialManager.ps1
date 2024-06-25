@@ -172,7 +172,11 @@ public static class UserInput {
     }
 
     public static TimeSpan GetIdleTime() {
-        return DateTime.Now - GetLastInputTime();
+        TimeSpan idleTime = DateTime.Now - GetLastInputTime();
+        if (idleTime.TotalMilliseconds < 0) {
+            idleTime = TimeSpan.Zero; // Ajusta para zero se o valor for negativo
+        }
+        return idleTime;
     }
 }
 "@ -ReferencedAssemblies "System.Runtime.InteropServices"
