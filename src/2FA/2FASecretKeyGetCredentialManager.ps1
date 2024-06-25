@@ -15,12 +15,12 @@
     * My blog: https://blacktdn.com.br/
     * Github: https://github.com/naldodj
 #>
-###################################################################################################
+#############################################################################################################################################
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName "System.ComponentModel.Primitives"
 Add-Type -AssemblyName "System.Windows.Forms.Primitives"
-###################################################################################################
+#############################################################################################################################################
 Add-Type -TypeDefinition @"
 using System;
 using System.Windows.Forms;
@@ -111,7 +111,7 @@ public class CustomForm : Form {
     }
 }
 "@ -ReferencedAssemblies "System.Windows.Forms.dll", "System.Drawing.dll", "System.ComponentModel.Primitives.dll", "System.Windows.Forms.Primitives.dll", "System.Diagnostics.Process.dll"
-###################################################################################################
+#############################################################################################################################################
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -149,64 +149,36 @@ public class Win32Functions {
     public static extern int UnregisterHotKey(IntPtr hWnd, int id);
 }
 "@
-###################################################################################################
-Add-Type -TypeDefinition @"
-using System;
-using System.Runtime.InteropServices;
-
-public static class UserInput {
-    [DllImport("user32.dll")]
-    public static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct LASTINPUTINFO {
-        public uint cbSize;
-        public uint dwTime;
-    }
-
-    public static DateTime GetLastInputTime() {
-        LASTINPUTINFO lii = new LASTINPUTINFO();
-        lii.cbSize = (uint)Marshal.SizeOf(typeof(LASTINPUTINFO));
-        GetLastInputInfo(ref lii);
-        return DateTime.Now.AddMilliseconds(-(Environment.TickCount - lii.dwTime));
-    }
-
-    public static TimeSpan GetIdleTime() {
-        TimeSpan idleTime = DateTime.Now - GetLastInputTime();
-        if (idleTime.TotalMilliseconds < 0) {
-            idleTime = TimeSpan.Zero; // Ajusta para zero se o valor for negativo
-        }
-        return idleTime;
-    }
-}
-"@ -ReferencedAssemblies "System.Runtime.InteropServices"
-###################################################################################################
-
-function Enable-TaskManager {
+#############################################################################################################################################
+function EnableTaskManager {
     Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableTaskMgr" -ErrorAction SilentlyContinue
 }
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Desabilita o Alt+Tab, Ctrl+Alt+Del, etc.
-function Disable-TaskManager {
+function DisableTaskManager {
     $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
     if (-not (Test-Path $regPath)) {
         New-Item -Path $regPath -Force
     }
     Set-ItemProperty -Path $regPath -Name "DisableTaskMgr" -Value 1
 }
+#############################################################################################################################################
 
-Disable-TaskManager
-
-function Enable-WindowsKey {
+#############################################################################################################################################
+function EnableWindowsKey {
     $VK_LWIN = 0x5B
     $VK_RWIN = 0x5C
 
     [Win32Functions]::UnregisterHotKey([IntPtr]::Zero, 1)
     [Win32Functions]::UnregisterHotKey([IntPtr]::Zero, 2)
 }
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Adicionando a função para desabilitar as teclas Windows
-function Disable-WindowsKey {
+function DisableWindowsKey {
     $VK_LWIN = 0x5B
     $VK_RWIN = 0x5C
     $MOD_NOREPEAT = 0x4000
@@ -215,18 +187,19 @@ function Disable-WindowsKey {
     [Win32Functions]::RegisterHotKey([IntPtr]::Zero, 1, $MOD_NOREPEAT -bor $MOD_WIN, $VK_LWIN)
     [Win32Functions]::RegisterHotKey([IntPtr]::Zero, 2, $MOD_NOREPEAT -bor $MOD_WIN, $VK_RWIN)
 }
+#############################################################################################################################################
 
-# Chamar a função para desabilitar as teclas Windows
-Disable-WindowsKey
-
-function Enable-Hotkeys {
+#############################################################################################################################################
+function EnableHotkeys {
     foreach ($id in $global:hotkeys.Keys) {
         [Win32Functions]::UnregisterHotKey([IntPtr]::Zero, $id)
     }
 }
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Função para desabilitar teclas de atalho
-function Disable-Hotkeys {
+function DisableHotkeys {
     $global:hotkeys = @{}
     $modifiers = @{
         Alt = 0x1
@@ -236,7 +209,7 @@ function Disable-Hotkeys {
     }
 
     $keys = @("Tab", "Escape", "F4", "LWin", "RWin")
-    $id = 3  # Começar com um ID maior para evitar conflito em Disable-WindowsKey
+    $id = 3  # Começar com um ID maior para evitar conflito em DisableWindowsKey
 
     foreach ($key in $keys) {
         $mod = 0
@@ -251,34 +224,66 @@ function Disable-Hotkeys {
         $id++
     }
 }
+#############################################################################################################################################
 
-Disable-Hotkeys
+#############################################################################################################################################
+function DisableAllKeys {
+    # Desabilita o Alt+Tab, Ctrl+Alt+Del, etc.
+    DisableTaskManager
+    # Chamar a função para desabilitar as teclas de Atalho
+    DisableHotkeys
+    # Chamar a função para desabilitar as teclas Windows
+    DisableWindowsKey
+    # Desativar o descanso de tela
+    powercfg -change -monitor-timeout-ac 0
+    powercfg -change -monitor-timeout-dc 0    
+}
+#############################################################################################################################################
+DisableAllKeys
+#############################################################################################################################################
 
+#############################################################################################################################################
+function EnableAllKeys {
+    # Desabilita o Alt+Tab, Ctrl+Alt+Del, etc.
+    EnableTaskManager
+    # Chamar a função para desabilitar as teclas de Atalho
+    EnableHotkeys
+    # Chamar a função para desabilitar as teclas Windows
+    EnableWindowsKey
+    # restaurar as configurações de descanso de tela
+    powercfg -change -monitor-timeout-ac 10
+    powercfg -change -monitor-timeout-dc 10    
+}
+#############################################################################################################################################
+
+#############################################################################################################################################
 # Caminho para o arquivo DLL Otp.NET (ajuste conforme necessário)
 $assemblyPath = "C:\Program Files\PackageManagement\NuGet\Packages\Otp.NET.1.4.0\lib\netstandard2.0\Otp.NET.dll"
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Verificar se o arquivo DLL existe
 if (-not (Test-Path $assemblyPath)) {
-    Enable-TaskManager
-    Enable-Hotkeys
-    Enable-WindowsKey
+    EnableAllKeys
     Write-Error "Arquivo DLL Otp.NET não encontrado em '$assemblyPath'. Verifique o caminho e reinstale o pacote."
     exit 1
 }
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Carregar o assembly Otp.NET
 try {
     [Reflection.Assembly]::LoadFrom($assemblyPath)
 } catch {
-    Enable-TaskManager
-    Enable-Hotkeys
-    Enable-WindowsKey
+    EnableAllKeys
     Write-Error "Erro ao carregar o assembly Otp.NET: $_"
     exit 1
 }
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Função para verificar o código 2FA
-function Verify-2FACode {
+function Verify2FACode {
     param (
         [string]$credName,
         [string]$code
@@ -311,9 +316,11 @@ function Verify-2FACode {
         return $false
     }
 }
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Função para centralizar controles verticalmente
-function Center-Control {
+function CenterControl {
     param (
         [System.Windows.Forms.Control]$control,
         [System.Windows.Forms.Form]$form,
@@ -322,10 +329,14 @@ function Center-Control {
     $control.Left = ($form.ClientSize.Width - $control.Width) / 2
     $control.Top = $yOffset
 }
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Credencial para verificar o código 2FA no processo de autenticação do Windows
 $credName = [System.Net.Dns]::GetHostName()
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Cria a janela
 $form = New-Object CustomForm
 $form.Text = "DNA Tech :: Autenticação 2FA"
@@ -424,29 +435,29 @@ $form.Controls.Add($button)
 
 # Centralizar controles no formulário
 $yOffset = ($form.ClientSize.Height - ($label.Height + $textBox.Height + $button.Height + 40)) / 2 + $titleBar.Height
-Center-Control -control $label -form $form -yOffset $yOffset
+CenterControl -control $label -form $form -yOffset $yOffset
 
 $yOffset += $label.Height + 20
-Center-Control -control $textBox -form $form -yOffset $yOffset
+CenterControl -control $textBox -form $form -yOffset $yOffset
 
 $yOffset += $textBox.Height + 20
-Center-Control -control $button -form $form -yOffset $yOffset
+CenterControl -control $button -form $form -yOffset $yOffset
 
 # Atualizar layout ao redimensionar a tela
 $form.add_SizeChanged({
     $yOffset = ($form.ClientSize.Height - ($label.Height + $textBox.Height + $button.Height + 40)) / 2 + $titleBar.Height
-    Center-Control -control $label -form $form -yOffset $yOffset
+    CenterControl -control $label -form $form -yOffset $yOffset
 
     $yOffset += $label.Height + 20
-    Center-Control -control $textBox -form $form -yOffset $yOffset
+    CenterControl -control $textBox -form $form -yOffset $yOffset
 
     $yOffset += $textBox.Height + 20
-    Center-Control -control $button -form $form -yOffset $yOffset
+    CenterControl -control $button -form $form -yOffset $yOffset
 })
 
 $button.Add_Click({
     # Aqui você pode adicionar a lógica de autenticação
-    $2FACode=(Verify-2FACode -credName $credName -code $textBox.Text)
+    $2FACode=(Verify2FACode -credName $credName -code $textBox.Text)
     if ($2FACode -eq $true) { # Exemplo de código 2FA
         $timer.Stop()
         [System.Windows.Forms.MessageBox]::Show("Código 2FA válido. Acesso permitido.")
@@ -460,6 +471,7 @@ $button.Add_Click({
 })
 $form.Controls.Add($button)
 
+#############################################################################################################################################
 # Evento para capturar Alt+F4
 $form.Add_KeyDown({
     param($sender, $e)
@@ -469,26 +481,24 @@ $form.Add_KeyDown({
         $textBox.Focus()
     }
 })
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Timer para capturar e suprimir eventos de tecla
 # Cria um objeto Mutex
-$mutex = New-Object System.Threading.Mutex($false, "Global\MyUniqueMutexName")
-
+$mutex = New-Object System.Threading.Mutex($false,"2FASecretKeyGetCredentialManagerMTX")
+#############################################################################################################################################
 $timer = New-Object System.Windows.Forms.Timer
 $timer.Interval = 100 # Intervalo aumentado para 100 milissegundos
 $timer.Add_Tick({
     # Tenta adquirir o mutex
-    if ($mutex.WaitOne(0)) {
-        try {
-            # Defina o limite de inatividade em milissegundos (por exemplo, .5 segundo)
-            $threshold = 500
-            $idleTime = [UserInput]::GetIdleTime()
-            ###########################################################################################
-            #    Write-Output "O sistema está inativo há: $($idleTime.TotalMinutes) minutos"
-            #    Write-Output "O sistema está inativo há: $($idleTime.TotalSeconds) segundos"
-            #    Write-Output "O sistema está inativo há: $($idleTime.TotalMilliseconds) milissegundos"
-            ###########################################################################################
-            if ($idleTime.TotalMilliseconds -le $threshold){
+    $iGotMutex=$false
+    try {
+        while (-not ($iGotMutex=$mutex.WaitOne(100))){
+            Start-Sleep -Milliseconds 50;
+        }
+        if ($iGotMutex){
+            try {
                 $msg = New-Object Win32Functions+MSG
                 if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
                     if ($msg.message -eq 0x0312) { # WM_HOTKEY
@@ -500,27 +510,34 @@ $timer.Add_Tick({
                     [Win32Functions]::TranslateMessage([ref]$msg) | Out-Null
                     [Win32Functions]::DispatchMessage([ref]$msg) | Out-Null
                 }
+            } finally {
+                # Libera o mutex
+                $mutex.ReleaseMutex()
             }
-        } finally {
-            # Libera o mutex
-            $mutex.ReleaseMutex()
         }
+    } finally {
+        #Garanto que todas as teclas continuarao desabilitadas
+        DisableAllKeys
     }
 })
+$timer.Start()
+#############################################################################################################################################
 
+#############################################################################################################################################
 #Executar o formulário
 $form.Add_Shown({
-    $timer.Start()
     $textBox.Focus()
     $form.Activate()
 })
-
 [System.Windows.Forms.Application]::Run($form)
+#############################################################################################################################################
 
+#############################################################################################################################################
 # Reabilita o Task Manager e as teclas de atalho ao finalizar o script
-Enable-TaskManager
-Enable-Hotkeys
-Enable-WindowsKey
+EnableAllKeys
+#############################################################################################################################################
 
-clear
+#############################################################################################################################################
+Clear
 Exit 0
+#############################################################################################################################################
