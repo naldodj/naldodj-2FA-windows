@@ -178,11 +178,6 @@ public static class UserInput {
 "@ -ReferencedAssemblies "System.Runtime.InteropServices"
 ###################################################################################################
 
-# Exemplo de uso
-$idleTime = [UserInput]::GetIdleTime()
-Write-Output "O sistema está inativo há: $($idleTime.TotalMinutes) minutos"
-
-
 function Enable-TaskManager {
     Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableTaskMgr" -ErrorAction SilentlyContinue
 }
@@ -484,6 +479,11 @@ $timer.Add_Tick({
             # Defina o limite de inatividade em milissegundos (por exemplo, .5 segundo)
             $threshold = 500
             $idleTime = [UserInput]::GetIdleTime()
+            ###########################################################################################
+            #    Write-Output "O sistema está inativo há: $($idleTime.TotalMinutes) minutos"
+            #    Write-Output "O sistema está inativo há: $($idleTime.TotalSeconds) segundos"
+            #    Write-Output "O sistema está inativo há: $($idleTime.TotalMilliseconds) milissegundos"
+            ###########################################################################################
             if ($idleTime.TotalMilliseconds -le $threshold){
                 $msg = New-Object Win32Functions+MSG
                 if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
