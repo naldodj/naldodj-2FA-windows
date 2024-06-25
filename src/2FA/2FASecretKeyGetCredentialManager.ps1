@@ -15,10 +15,12 @@
     * My blog: https://blacktdn.com.br/
     * Github: https://github.com/naldodj
 #>
+###################################################################################################
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName "System.ComponentModel.Primitives"
 Add-Type -AssemblyName "System.Windows.Forms.Primitives"
+###################################################################################################
 Add-Type -TypeDefinition @"
 using System;
 using System.Windows.Forms;
@@ -109,6 +111,7 @@ public class CustomForm : Form {
     }
 }
 "@ -ReferencedAssemblies "System.Windows.Forms.dll", "System.Drawing.dll", "System.ComponentModel.Primitives.dll", "System.Windows.Forms.Primitives.dll", "System.Diagnostics.Process.dll"
+###################################################################################################
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -146,6 +149,39 @@ public class Win32Functions {
     public static extern int UnregisterHotKey(IntPtr hWnd, int id);
 }
 "@
+###################################################################################################
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+
+public static class UserInput {
+    [DllImport("user32.dll")]
+    public static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct LASTINPUTINFO {
+        public uint cbSize;
+        public uint dwTime;
+    }
+
+    public static DateTime GetLastInputTime() {
+        LASTINPUTINFO lii = new LASTINPUTINFO();
+        lii.cbSize = (uint)Marshal.SizeOf(typeof(LASTINPUTINFO));
+        GetLastInputInfo(ref lii);
+        return DateTime.Now.AddMilliseconds(-(Environment.TickCount - lii.dwTime));
+    }
+
+    public static TimeSpan GetIdleTime() {
+        return DateTime.Now - GetLastInputTime();
+    }
+}
+"@ -ReferencedAssemblies "System.Runtime.InteropServices"
+###################################################################################################
+
+# Exemplo de uso
+$idleTime = [UserInput]::GetIdleTime()
+Write-Output "O sistema está inativo há: $($idleTime.TotalMinutes) minutos"
+
 
 function Enable-TaskManager {
     Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableTaskMgr" -ErrorAction SilentlyContinue
@@ -415,9 +451,6 @@ $button.Add_Click({
     if ($2FACode -eq $true) { # Exemplo de código 2FA
         $timer.Stop()
         [System.Windows.Forms.MessageBox]::Show("Código 2FA válido. Acesso permitido.")
-        Enable-TaskManager
-        Enable-Hotkeys
-        Enable-WindowsKey
         $form.Close()
     } else {
         [System.Windows.Forms.MessageBox]::Show("Código 2FA inválido. Acesso negado.")
@@ -427,35 +460,6 @@ $button.Add_Click({
     }
 })
 $form.Controls.Add($button)
-
-# Timer para capturar e suprimir eventos de tecla
-# Cria um objeto Mutex
-$mutex = New-Object System.Threading.Mutex($false, "Global\MyUniqueMutexName")
-
-$timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = 100 # Intervalo aumentado para 100 milissegundos
-$timer.Add_Tick({
-    # Tenta adquirir o mutex
-    if ($mutex.WaitOne(0)) {
-        try {
-            $msg = New-Object Win32Functions+MSG
-            if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
-                if ($msg.message -eq 0x0312) { # WM_HOTKEY
-                    $key = $global:hotkeys[$msg.wParam.ToInt32()]
-                    if ($key -eq "F4" -and ($msg.lParam.ToInt32() -band 0x1)) { # Alt+F4
-                        $form.Focus()
-                    }
-                }
-                [Win32Functions]::TranslateMessage([ref]$msg) | Out-Null
-                [Win32Functions]::DispatchMessage([ref]$msg) | Out-Null
-            }
-        } finally {
-            # Libera o mutex
-            $mutex.ReleaseMutex()
-        }
-    }
-})
-$timer.Start()
 
 # Evento para capturar Alt+F4
 $form.Add_KeyDown({
@@ -467,21 +471,52 @@ $form.Add_KeyDown({
     }
 })
 
-# Exibe a janela
-#[void]$form.ShowDialog()
+# Timer para capturar e suprimir eventos de tecla
+# Cria um objeto Mutex
+$mutex = New-Object System.Threading.Mutex($false, "Global\MyUniqueMutexName")
+
+$timer = New-Object System.Windows.Forms.Timer
+$timer.Interval = 100 # Intervalo aumentado para 100 milissegundos
+$timer.Add_Tick({
+    # Tenta adquirir o mutex
+    if ($mutex.WaitOne(0)) {
+        try {
+            # Defina o limite de inatividade em milissegundos (por exemplo, .5 segundo)
+            $threshold = 500
+            $idleTime = [UserInput]::GetIdleTime()
+            if ($idleTime.TotalMilliseconds -le $threshold){
+                $msg = New-Object Win32Functions+MSG
+                if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
+                    if ($msg.message -eq 0x0312) { # WM_HOTKEY
+                        $key = $global:hotkeys[$msg.wParam.ToInt32()]
+                        if ($key -eq "F4" -and ($msg.lParam.ToInt32() -band 0x1)) { # Alt+F4
+                            $form.Focus()
+                        }
+                    }
+                    [Win32Functions]::TranslateMessage([ref]$msg) | Out-Null
+                    [Win32Functions]::DispatchMessage([ref]$msg) | Out-Null
+                }
+            }
+        } finally {
+            # Libera o mutex
+            $mutex.ReleaseMutex()
+        }
+    }
+})
+
 #Executar o formulário
 $form.Add_Shown({
+    $timer.Start()
     $textBox.Focus()
     $form.Activate()
 })
 
 [System.Windows.Forms.Application]::Run($form)
 
-$timer.Stop()
-
 # Reabilita o Task Manager e as teclas de atalho ao finalizar o script
 Enable-TaskManager
 Enable-Hotkeys
 Enable-WindowsKey
+
 clear
 Exit 0
