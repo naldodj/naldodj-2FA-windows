@@ -349,7 +349,7 @@ $label.ForeColor = [System.Drawing.Color]::White
 $label.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $label.Font = New-Object System.Drawing.Font("Helvetica", 10, [System.Drawing.FontStyle]::Regular)
 $label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter # Centraliza o texto
-$form.Controls.Add($label)S
+$form.Controls.Add($label)
 
 $textBox = New-Object System.Windows.Forms.TextBox
 $textBox.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do TextBox
@@ -369,10 +369,6 @@ $button.ForeColor = [System.Drawing.Color]::White
 $button.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $button.Font = New-Object System.Drawing.Font("Helvetica", 10, [System.Drawing.FontStyle]::Regular)
 $form.Controls.Add($button)
-    
-# Ajusta a transparência do formulário
-$form.BackColor = [System.Drawing.Color]::FromArgb(0, 0, 0, 0)
-$form.TransparencyKey = $form.BackColor
 
 # Centralizar controles no formulário
 $yOffset = ($form.ClientSize.Height - ($label.Height + $textBox.Height + $button.Height + 40)) / 2 + $titleBar.Height
