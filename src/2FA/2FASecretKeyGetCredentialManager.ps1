@@ -482,8 +482,6 @@ $form.Add_KeyDown({
     }
 })
 #############################################################################################################################################
-
-#############################################################################################################################################
 # Timer para capturar e suprimir eventos de tecla
 # Cria um objeto Mutex
 $mutex = New-Object System.Threading.Mutex($false,"2FASecretKeyGetCredentialManagerMTX")
@@ -494,9 +492,13 @@ $timer.Add_Tick({
     # Tenta adquirir o mutex
     $iGotMutex=$false
     try {
-        while (-not ($iGotMutex=$mutex.WaitOne(100))){
-            Start-Sleep -Milliseconds 50;
-        }
+        $nGotMutex=0
+        while (!($iGotMutex=$mutex.WaitOne(10))) {
+            $nGotMutex++
+            if ($nGotMutex>10){
+                break
+            }
+        }        
         if ($iGotMutex){
             try {
                 $msg = New-Object Win32Functions+MSG
@@ -515,17 +517,41 @@ $timer.Add_Tick({
                 $mutex.ReleaseMutex()
             }
         }
+    } catch {
+        $timer.Stop()
+        Write-Error "Erro ao tentar adquirir o mutex: $_"
+        $timer.Start()
     } finally {
-        #Garanto que todas as teclas continuarao desabilitadas
-        DisableAllKeys
+        # Adicione qualquer ação necessária aqui
     }
 })
-$timer.Start()
+
+# Evento para parar o timer ao bloquear a sessão e reiniciar ao desbloquear
+Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "SessionSwitch" -Action {
+    if ($_.SessionSwitchReason -eq [Microsoft.Win32.SessionSwitchReason]::SessionLock) {
+        $timer.Stop()
+    } elseif ($_.SessionSwitchReason -eq [Microsoft.Win32.SessionSwitchReason]::SessionUnlock) {
+        $timer.Stop()
+        $timer.Start()
+    }
+}
+
+# Evento para monitorar mudanças de estado de energia
+Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "PowerModeChanged" -Action {
+    if ($_.Mode -eq [Microsoft.Win32.PowerModes]::Suspend) {
+        $timer.Stop()
+    } elseif ($_.Mode -eq [Microsoft.Win32.PowerModes]::Resume) {
+        $timer.Stop()
+        $timer.Start()
+    }
+}
+
 #############################################################################################################################################
 
 #############################################################################################################################################
 #Executar o formulário
 $form.Add_Shown({
+    $timer.Start()
     $textBox.Focus()
     $form.Activate()
 })
