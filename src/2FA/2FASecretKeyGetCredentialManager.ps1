@@ -541,6 +541,7 @@ Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "S
     } elseif ($_.SessionSwitchReason -eq [Microsoft.Win32.SessionSwitchReason]::SessionUnlock) {
         $timer.Stop()
         $timer.Start()
+        $form.Focus()
         $textBox.Focus()
     }
 }
@@ -552,6 +553,7 @@ Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "P
     } elseif ($_.Mode -eq [Microsoft.Win32.PowerModes]::Resume) {
         $timer.Stop()
         $timer.Start()
+        $form.Focus()
         $textBox.Focus()
     }
 }
