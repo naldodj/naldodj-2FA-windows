@@ -266,7 +266,7 @@ $assemblyPath = "C:\Program Files\PackageManagement\NuGet\Packages\Otp.NET.1.4.0
 if (-not (Test-Path $assemblyPath)) {
     EnableAllKeys
     Write-Error "Arquivo DLL Otp.NET não encontrado em '$assemblyPath'. Verifique o caminho e reinstale o pacote."
-    exit 1
+    exit -1
 }
 #############################################################################################################################################
 
@@ -277,7 +277,7 @@ try {
 } catch {
     EnableAllKeys
     Write-Error "Erro ao carregar o assembly Otp.NET: $_"
-    exit 1
+    exit -2
 }
 #############################################################################################################################################
 
@@ -307,12 +307,12 @@ function Verify2FACode {
             return $true
         } else {
             Write-Output "Código 2FA inválido. Acesso negado."
-            # Desligar o computador
+            # Tentar novamente
             return $false
         }
     } catch {
         Write-Output "Erro ao verificar o código 2FA: $_"
-        # Desligar o computador em caso de erro
+        # Tentar novamente
         return $false
     }
 }
@@ -451,7 +451,7 @@ $form.add_SizeChanged({
 
     $yOffset += $label.Height + 20
     CenterControl -control $textBox -form $form -yOffset $yOffset
-177155
+
     $yOffset += $textBox.Height + 20
     CenterControl -control $button -form $form -yOffset $yOffset
 })
@@ -471,6 +471,17 @@ $button.Add_Click({
     }
 })
 $form.Controls.Add($button)
+#############################################################################################################################################
+
+#############################################################################################################################################
+# Adiciona o evento KeyDown ao formulário
+$form.Add_KeyDown({
+    param($sender, $e)
+    if ($e.KeyCode -eq [System.Windows.Forms.Keys]::Enter) {
+        $button.PerformClick()
+    }
+})
+#############################################################################################################################################
 
 #############################################################################################################################################
 # Evento para capturar Alt+F4
