@@ -235,8 +235,8 @@ function DisableAllKeys {
     # Chamar a função para desabilitar as teclas Windows
     DisableWindowsKey
     # Desativar o descanso de tela
-    powercfg -change -monitor-timeout-ac 0
-    powercfg -change -monitor-timeout-dc 0    
+    #powercfg -change -monitor-timeout-ac 0
+    #powercfg -change -monitor-timeout-dc 0    
 }
 #############################################################################################################################################
 DisableAllKeys
@@ -251,8 +251,8 @@ function EnableAllKeys {
     # Chamar a função para desabilitar as teclas Windows
     EnableWindowsKey
     # restaurar as configurações de descanso de tela
-    powercfg -change -monitor-timeout-ac 10
-    powercfg -change -monitor-timeout-dc 10    
+    #powercfg -change -monitor-timeout-ac 10
+    #powercfg -change -monitor-timeout-dc 10    
 }
 #############################################################################################################################################
 
@@ -394,6 +394,7 @@ $titleBar.Add_MouseUp({
 $form.Add_Activated({
     $form.TopMost = $true
     $form.Focus()
+    $textBox.Focus()
 })
 
 # Evento para impedir o fechamento da janela
@@ -450,7 +451,7 @@ $form.add_SizeChanged({
 
     $yOffset += $label.Height + 20
     CenterControl -control $textBox -form $form -yOffset $yOffset
-
+177155
     $yOffset += $textBox.Height + 20
     CenterControl -control $button -form $form -yOffset $yOffset
 })
@@ -458,7 +459,7 @@ $form.add_SizeChanged({
 $button.Add_Click({
     # Aqui você pode adicionar a lógica de autenticação
     $2FACode=(Verify2FACode -credName $credName -code $textBox.Text)
-    if ($2FACode -eq $true) { # Exemplo de código 2FA
+    if ($2FACode -eq $true) { # Verifica se o código 2FA
         $timer.Stop()
         [System.Windows.Forms.MessageBox]::Show("Código 2FA válido. Acesso permitido.")
         $form.Close()
@@ -507,22 +508,29 @@ $timer.Add_Tick({
                         $key = $global:hotkeys[$msg.wParam.ToInt32()]
                         if ($key -eq "F4" -and ($msg.lParam.ToInt32() -band 0x1)) { # Alt+F4
                             $form.Focus()
+                            $textBox.Focus()
                         }
                     }
                     [Win32Functions]::TranslateMessage([ref]$msg) | Out-Null
                     [Win32Functions]::DispatchMessage([ref]$msg) | Out-Null
                 }
             } finally {
+                $iGotMutex=$false
                 # Libera o mutex
                 $mutex.ReleaseMutex()
             }
         }
+    } catch [System.Threading.AbandonedMutexException] {
+        Write-Error "Mutex abandonado detectado. Tentando readquirir..."
+        $iGotMutex = $true
+        $mutex = New-Object System.Threading.Mutex($false,"2FASecretKeyGetCredentialManagerMTX")
     } catch {
-        $timer.Stop()
         Write-Error "Erro ao tentar adquirir o mutex: $_"
-        $timer.Start()
     } finally {
-        # Adicione qualquer ação necessária aqui
+        if ($iGotMutex) {
+            # Libera o mutex se foi adquirido
+            $mutex.ReleaseMutex()
+        }
     }
 })
 
@@ -533,6 +541,7 @@ Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "S
     } elseif ($_.SessionSwitchReason -eq [Microsoft.Win32.SessionSwitchReason]::SessionUnlock) {
         $timer.Stop()
         $timer.Start()
+        $textBox.Focus()
     }
 }
 
@@ -543,6 +552,7 @@ Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "P
     } elseif ($_.Mode -eq [Microsoft.Win32.PowerModes]::Resume) {
         $timer.Stop()
         $timer.Start()
+        $textBox.Focus()
     }
 }
 
