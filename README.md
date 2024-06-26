@@ -11,7 +11,7 @@ Autenticação de dois fatores (2FA) é uma camada adicional de segurança usada
 - Algo que você possui - um dispositivo específico, como um smartphone.
 - Algo que você é - uma impressão digital ou reconhecimento facial.
 
-Neste guia, vamos configurar a autenticação de dois fatores (2FA) usando PowerShell e a biblioteca Otp.NET, armazenando a chave secreta no Windows Credential Manager e validando o código gerado por aplicativos autenticadores como Google Authenticator ou Microsoft Authenticator.
+Neste guia, vamos configurar a autenticação de dois fatores (2FA) usando PowerShell e a biblioteca Otp.NET, armazenando a chave secreta no Windows Credential Manager e validando o código gerado por aplicativos autenticadores como Microsoft Authenticator ou Google Authenticator.
 
 ## Pré-requisitos
 
@@ -20,24 +20,28 @@ Neste guia, vamos configurar a autenticação de dois fatores (2FA) usando Power
 
 ## Passo 1: Instalar a Biblioteca Otp.NET
 
-Primeiro, precisamos instalar a biblioteca Otp.NET usando o NuGet. Execute o seguinte comando no PowerShell:
+Primeiro, precisamos instalar as bibliotecas Otp.NET e QRCoder usando o NuGet. Execute os seguintes comandos no PowerShell:
 
 ```powershell
 Install-Package Otp.NET
+Install-Package -Name QRCoder -Source nuget.org
 ```
 
 ## Passo 2: Gerar e Armazenar a Chave Secreta
 
-Vamos criar um script PowerShell para gerar e mostrar a chave secreta para configurar o aplicativo autenticador.
+Vamos criar um script PowerShell para gerar e mostrar a chave secreta bem como o QRCode para configurar o aplicativo autenticador.
 
 ###(`2FASecretKeyPutCredentialManager.ps1`)[https://github.com/naldodj/naldodj-2FA-windows/blob/main/src/2FA/2FASecretKeyPutCredentialManager.ps1]
 
 ### `.\2FASecretKeyPutCredentialManager.ps1`
 ![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/6c11d4d7-d9cd-48f2-8b77-505ba64b9fb0)
-![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/cc38f83f-d218-41d9-9305-b23e54c160c4)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/91b679da-0b3d-4a2c-9e03-6a099dbe1709)
 ![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/66fb6810-47c6-4c4f-af97-906a2e2d8204)
+![image](https://github.com/naldodj/naldodj-2FA-windows/assets/102384575/2fcb5c17-b28d-45b8-b00c-01a66eba6215)
 
 ## Passo 3: Verificar o Código 2FA
+
+Leia o QRCode gerado usando o seu aplicativo autenticador preferido, por exemplo "Microsoft Authenticator ou Google Authenticator" e pronto.
 
 Agora, vamos criar um script PowerShell para verificar o código 2FA gerado pelo aplicativo autenticador.
 ###(`2FASecretKeyChkCredentialManager.ps1`)[https://github.com/naldodj/naldodj-2FA-windows/blob/main/src/2FA/2FASecretKeyChkCredentialManager.ps1]
