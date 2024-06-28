@@ -70,8 +70,12 @@ function Generate-2FASecret {
     $issuer = "DNA-TECH"
     $accountName = [uri]::EscapeDataString("$credName")
     $label = $issuer+":"+$accountName
-    $qrUri = "otpauth://totp/"+$label+"?secret=$base32Secret&issuer=$issuer&digits=6&period=30&algorithm=SHA1"
+    $qrUri = "otpauth://totp/"+$label+"?secret=$base32Secret&issuer=$issuer&digits=6&period=30&algorithm=SHA512"
 
+    # Exibir o link com o QR Code para configurar o autenticador
+    $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data=$([uri]::EscapeDataString($qrUri))"
+    Write-Output "URL do QR Code: $qrCodeUrl"
+    
     # Gerar o QR Code usando QRCoder
     $qrGenerator = New-Object QRCoder.QRCodeGenerator
     $qrCodeData = $qrGenerator.CreateQrCode($qrUri, [QRCoder.QRCodeGenerator+ECCLevel]::Q)
@@ -90,4 +94,3 @@ function Generate-2FASecret {
 # Exemplo de uso para gerar e armazenar a chave secreta
 $credName = [System.Net.Dns]::GetHostName()
 Generate-2FASecret -credName $credName
-
