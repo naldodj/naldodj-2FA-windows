@@ -352,9 +352,20 @@ $form.MaximizeBox = $false
 # Adicionar transparência
 $form.Opacity = 0.9
 
-# Adicionar imagem de fundo
-$form.BackgroundImage = [System.Drawing.Image]::FromFile("C:\GitHub\naldodj-2FA-windows\img\2FABackGround.jpeg")
-$form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::Stretch
+# Define o caminho da pasta onde estão as imagens
+$imgfolderPath = "C:\GitHub\naldodj-2FA-windows\img"
+# Obtém a lista de arquivos na pasta com a extensão desejada (por exemplo, .jpeg)
+$imgfiles = Get-ChildItem -Path $imgfolderPath -Filter *.jpeg
+# Verifica se há arquivos na pasta
+if ($imgfiles.Count -gt 0) {
+    # Seleciona um arquivo aleatório da lista
+    $randomFile = Get-Random -InputObject $imgfiles
+    # Define a imagem de fundo com o arquivo selecionado
+    $form.BackgroundImage = [System.Drawing.Image]::FromFile($randomFile.FullName)
+    $form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::Stretch
+} else {
+    Write-Host "Nenhum arquivo encontrado na pasta especificada."
+}
 
 # Criar barra de título personalizada
 $titleBar = New-Object System.Windows.Forms.Panel
