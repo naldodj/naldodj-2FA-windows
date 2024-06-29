@@ -239,8 +239,6 @@ function DisableAllKeys {
     #powercfg -change -monitor-timeout-dc 0    
 }
 #############################################################################################################################################
-DisableAllKeys
-#############################################################################################################################################
 
 #############################################################################################################################################
 function EnableAllKeys {
@@ -257,206 +255,202 @@ function EnableAllKeys {
 #############################################################################################################################################
 
 #############################################################################################################################################
-# Caminho para o arquivo DLL Otp.NET (ajuste conforme necessário)
-$assemblyPath = "C:\Program Files\PackageManagement\NuGet\Packages\Otp.NET.1.4.0\lib\netstandard2.0\Otp.NET.dll"
-#############################################################################################################################################
-
-#############################################################################################################################################
-# Verificar se o arquivo DLL existe
-if (-not (Test-Path $assemblyPath)) {
-    EnableAllKeys
-    Write-Error "Arquivo DLL Otp.NET não encontrado em '$assemblyPath'. Verifique o caminho e reinstale o pacote."
-    exit -1
-}
-#############################################################################################################################################
-
-#############################################################################################################################################
-# Carregar o assembly Otp.NET
 try {
-    [Reflection.Assembly]::LoadFrom($assemblyPath)
-} catch {
-    EnableAllKeys
-    Write-Error "Erro ao carregar o assembly Otp.NET: $_"
-    exit -2
-}
-#############################################################################################################################################
 
-#############################################################################################################################################
-# Função para verificar o código 2FA
-function Verify2FACode {
-    param (
-        [string]$credName,
-        [string]$code
-    )
+    #############################################################################################################################################
+    DisableAllKeys
+    #############################################################################################################################################
 
-    # Recuperar a chave secreta do Windows Credential Manager
-    $credentialPath="C:\2FA\"
-    $credential = Import-Clixml -Path "$credentialPath$credName.xml"
-    $base32Secret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($credential.Password))
-    $secretKey = [OtpNet.Base32Encoding]::ToBytes($base32Secret)
+    #############################################################################################################################################
+    # Caminho para o arquivo DLL Otp.NET (ajuste conforme necessário)
+    $assemblyPath = "C:\Program Files\PackageManagement\NuGet\Packages\Otp.NET.1.4.0\lib\netstandard2.0\Otp.NET.dll"
+    #############################################################################################################################################
 
+    #############################################################################################################################################
+    # Verificar se o arquivo DLL existe
+    if (-not (Test-Path $assemblyPath)) {
+        EnableAllKeys
+        Write-Error "Arquivo DLL Otp.NET não encontrado em '$assemblyPath'. Verifique o caminho e reinstale o pacote."
+        exit -1
+    }
+    #############################################################################################################################################
+
+    #############################################################################################################################################
+    # Carregar o assembly Otp.NET
     try {
-        # Configurar TOTP com a chave secreta
-        $totp = [OtpNet.Totp]::new($secretKey)
+        [Reflection.Assembly]::LoadFrom($assemblyPath)
+    } catch {
+        EnableAllKeys
+        Write-Error "Erro ao carregar o assembly Otp.NET: $_"
+        exit -2
+    }
+    #############################################################################################################################################
 
-        # Verificar o código 2FA
-        $timeWindowUsed = 0
-        if ($totp.VerifyTotp($code, [ref] $timeWindowUsed)) {
-            Write-Output "Código 2FA válido. Acesso permitido."
-            # Continue com o processo de logon do Windows
-            return $true
-        } else {
-            Write-Output "Código 2FA inválido. Acesso negado."
+    #############################################################################################################################################
+    # Função para verificar o código 2FA
+    function Verify2FACode {
+        param (
+            [string]$credName,
+            [string]$code
+        )
+
+        # Recuperar a chave secreta do Windows Credential Manager
+        $credentialPath="C:\2FA\"
+        $credential = Import-Clixml -Path "$credentialPath$credName.xml"
+        $base32Secret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($credential.Password))
+        $secretKey = [OtpNet.Base32Encoding]::ToBytes($base32Secret)
+
+        try {
+            # Configurar TOTP com a chave secreta
+            $totp = [OtpNet.Totp]::new($secretKey)
+
+            # Verificar o código 2FA
+            $timeWindowUsed = 0
+            if ($totp.VerifyTotp($code, [ref] $timeWindowUsed)) {
+                Write-Output "Código 2FA válido. Acesso permitido."
+                # Continue com o processo de logon do Windows
+                return $true
+            } else {
+                Write-Output "Código 2FA inválido. Acesso negado."
+                # Tentar novamente
+                return $false
+            }
+        } catch {
+            Write-Output "Erro ao verificar o código 2FA: $_"
             # Tentar novamente
             return $false
         }
-    } catch {
-        Write-Output "Erro ao verificar o código 2FA: $_"
-        # Tentar novamente
-        return $false
     }
-}
-#############################################################################################################################################
+    #############################################################################################################################################
 
-#############################################################################################################################################
-# Função para centralizar controles verticalmente
-function CenterControl {
-    param (
-        [System.Windows.Forms.Control]$control,
-        [System.Windows.Forms.Form]$form,
-        [int]$yOffset
-    )
-    $control.Left = ($form.ClientSize.Width - $control.Width) / 2
-    $control.Top = $yOffset
-}
-#############################################################################################################################################
-
-#############################################################################################################################################
-# Credencial para verificar o código 2FA no processo de autenticação do Windows
-$credName = [System.Net.Dns]::GetHostName()
-#############################################################################################################################################
-
-#############################################################################################################################################
-# Cria a janela
-$form = New-Object CustomForm
-$form.Text = "DNA Tech :: Autenticação 2FA"
-$form.TopMost = $true
-$form.ControlBox = $false
-$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None
-$form.WindowState = [System.Windows.Forms.FormWindowState]::Maximized
-$form.KeyPreview = $true
-$form.StartPosition = "CenterScreen"
-$form.FormBorderStyle = "FixedSingle"
-$form.MaximizeBox = $false
-
-# Adicionar transparência
-$form.Opacity = 0.9
-
-# Define o caminho da pasta onde estão as imagens
-$imgfolderPath = "C:\GitHub\naldodj-2FA-windows\img"
-# Obtém a lista de arquivos na pasta com a extensão desejada (por exemplo, .jpeg)
-$imgfiles = Get-ChildItem -Path $imgfolderPath -Filter *.jpeg
-# Verifica se há arquivos na pasta
-if ($imgfiles.Count -gt 0) {
-    # Seleciona um arquivo aleatório da lista
-    $randomFile = Get-Random -InputObject $imgfiles
-    # Define a imagem de fundo com o arquivo selecionado
-    $form.BackgroundImage = [System.Drawing.Image]::FromFile($randomFile.FullName)
-    $form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::Stretch
-} else {
-    Write-Host "Nenhum arquivo encontrado na pasta especificada."
-}
-
-# Criar barra de título personalizada
-$titleBar = New-Object System.Windows.Forms.Panel
-$titleBar.BackColor = [System.Drawing.Color]::FromArgb(50, 50, 50)
-$titleBar.Height = 30
-$titleBar.Dock = [System.Windows.Forms.DockStyle]::Top
-$form.Controls.Add($titleBar)
-
-$titleLabel = New-Object System.Windows.Forms.Label
-$titleLabel.Text = "DNA Tech :: 2FA Secret Key Credential Manager"
-$titleLabel.ForeColor = [System.Drawing.Color]::White
-$titleLabel.Dock = [System.Windows.Forms.DockStyle]::Fill
-$titleLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
-$titleLabel.Padding = New-Object System.Windows.Forms.Padding(10, 0, 0, 0)
-$titleBar.Controls.Add($titleLabel)
-
-# Permitir movimentação do formulário ao arrastar a barra de título personalizada
-$titleBar.Add_MouseDown({
-    $global:dragging = $true
-    $global:startPoint = New-Object System.Drawing.Point($eventArgs.X, $eventArgs.Y)
-})
-
-$titleBar.Add_MouseMove({
-    if ($global:dragging) {
-        $point = [System.Windows.Forms.Cursor]::Position
-        $point.X = $point.X - $global:startPoint.X
-        $point.Y = $point.Y - $global:startPoint.Y
-        $form.Location = $point
+    #############################################################################################################################################
+    # Função para centralizar controles verticalmente
+    function CenterControl {
+        param (
+            [System.Windows.Forms.Control]$control,
+            [System.Windows.Forms.Form]$form,
+            [int]$yOffset
+        )
+        $control.Left = ($form.ClientSize.Width - $control.Width) / 2
+        $control.Top = $yOffset
     }
-})
+    #############################################################################################################################################
 
-$titleBar.Add_MouseUp({
-    $global:dragging = $false
-})
+    #############################################################################################################################################
+    # Credencial para verificar o código 2FA no processo de autenticação do Windows
+    $credName = [System.Net.Dns]::GetHostName()
+    #############################################################################################################################################
 
-# Evento para manter o foco na janela
-$form.Add_Activated({
+    #############################################################################################################################################
+    # Cria a janela
+    $form = New-Object CustomForm
+    $form.Text = "DNA Tech :: Autenticação 2FA"
     $form.TopMost = $true
-    $form.Focus()
-    $textBox.Focus()
-})
+    $form.ControlBox = $false
+    $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None
+    $form.WindowState = [System.Windows.Forms.FormWindowState]::Maximized
+    $form.KeyPreview = $true
+    $form.StartPosition = "CenterScreen"
+    $form.FormBorderStyle = "FixedSingle"
+    $form.MaximizeBox = $false
 
-# Evento para impedir o fechamento da janela
-$form.Add_FormClosing({
-    $eventArgs = [System.Windows.Forms.FormClosingEventArgs]::new([System.Windows.Forms.CloseReason]::None, $false)
-    $eventArgs.Cancel = $true
-})
+    # Adicionar transparência
+    $form.Opacity = 0.9
 
-# Adiciona um campo de texto para o código 2FA
-$label = New-Object System.Windows.Forms.Label
-$label.Text = "Digite o código 2FA"
-$label.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do Label
-$label.Location = New-Object System.Drawing.Point(10,10)
-$label.BackColor = [System.Drawing.Color]::FromArgb(30, 144, 255)
-$label.ForeColor = [System.Drawing.Color]::White
-$label.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$label.Font = New-Object System.Drawing.Font("Helvetica", 10, [System.Drawing.FontStyle]::Regular)
-$label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter # Centraliza o texto
-$form.Controls.Add($label)
+    # Define o caminho da pasta onde estão as imagens
+    $imgfolderPath = "C:\GitHub\naldodj-2FA-windows\img"
+    # Obtém a lista de arquivos na pasta com a extensão desejada (por exemplo, .jpeg)
+    $imgfiles = Get-ChildItem -Path $imgfolderPath -Filter *.jpeg
+    # Verifica se há arquivos na pasta
+    if ($imgfiles.Count -gt 0) {
+        # Seleciona um arquivo aleatório da lista
+        $randomFile = Get-Random -InputObject $imgfiles
+        # Define a imagem de fundo com o arquivo selecionado
+        $form.BackgroundImage = [System.Drawing.Image]::FromFile($randomFile.FullName)
+        $form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::Stretch
+    } else {
+        Write-Host "Nenhum arquivo encontrado na pasta especificada."
+    }
 
-$textBox = New-Object System.Windows.Forms.TextBox
-$textBox.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do TextBox
-$textBox.Location = New-Object System.Drawing.Point(10,50) # Reduz o espaçamento
-$textBox.BackColor = [System.Drawing.Color]::FromArgb(50, 50, 50)
-$textBox.ForeColor = [System.Drawing.Color]::White
-$textBox.Font = New-Object System.Drawing.Font("Helvetica", 10)
-$form.Controls.Add($textBox)
+    # Criar barra de título personalizada
+    $titleBar = New-Object System.Windows.Forms.Panel
+    $titleBar.BackColor = [System.Drawing.Color]::FromArgb(50, 50, 50)
+    $titleBar.Height = 30
+    $titleBar.Dock = [System.Windows.Forms.DockStyle]::Top
+    $form.Controls.Add($titleBar)
 
-# Adiciona um botão para enviar o código
-$button = New-Object System.Windows.Forms.Button
-$button.Text = "&Autenticar"
-$button.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do Button
-$button.Location = New-Object System.Drawing.Point(10,90) # Reduz o espaçamento
-$button.BackColor = [System.Drawing.Color]::FromArgb(30, 144, 255)
-$button.ForeColor = [System.Drawing.Color]::White
-$button.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$button.Font = New-Object System.Drawing.Font("Helvetica", 10, [System.Drawing.FontStyle]::Regular)
-$form.Controls.Add($button)
+    $titleLabel = New-Object System.Windows.Forms.Label
+    $titleLabel.Text = "DNA Tech :: 2FA Secret Key Credential Manager"
+    $titleLabel.ForeColor = [System.Drawing.Color]::White
+    $titleLabel.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $titleLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
+    $titleLabel.Padding = New-Object System.Windows.Forms.Padding(10, 0, 0, 0)
+    $titleBar.Controls.Add($titleLabel)
 
-# Centralizar controles no formulário
-$yOffset = ($form.ClientSize.Height - ($label.Height + $textBox.Height + $button.Height + 40)) / 2 + $titleBar.Height
-CenterControl -control $label -form $form -yOffset $yOffset
+    # Permitir movimentação do formulário ao arrastar a barra de título personalizada
+    $titleBar.Add_MouseDown({
+        $global:dragging = $true
+        $global:startPoint = New-Object System.Drawing.Point($eventArgs.X, $eventArgs.Y)
+    })
 
-$yOffset += $label.Height + 20
-CenterControl -control $textBox -form $form -yOffset $yOffset
+    $titleBar.Add_MouseMove({
+        if ($global:dragging) {
+            $point = [System.Windows.Forms.Cursor]::Position
+            $point.X = $point.X - $global:startPoint.X
+            $point.Y = $point.Y - $global:startPoint.Y
+            $form.Location = $point
+        }
+    })
 
-$yOffset += $textBox.Height + 20
-CenterControl -control $button -form $form -yOffset $yOffset
+    $titleBar.Add_MouseUp({
+        $global:dragging = $false
+    })
 
-# Atualizar layout ao redimensionar a tela
-$form.add_SizeChanged({
+    # Evento para manter o foco na janela
+    $form.Add_Activated({
+        $form.TopMost = $true
+        $form.Focus()
+        $textBox.Focus()
+    })
+
+    # Evento para impedir o fechamento da janela
+    $form.Add_FormClosing({
+        $eventArgs = [System.Windows.Forms.FormClosingEventArgs]::new([System.Windows.Forms.CloseReason]::None, $false)
+        $eventArgs.Cancel = $true
+    })
+
+    # Adiciona um campo de texto para o código 2FA
+    $label = New-Object System.Windows.Forms.Label
+    $label.Text = "Digite o código 2FA"
+    $label.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.BackColor = [System.Drawing.Color]::FromArgb(30, 144, 255)
+    $label.ForeColor = [System.Drawing.Color]::White
+    $label.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $label.Font = New-Object System.Drawing.Font("Helvetica", 10, [System.Drawing.FontStyle]::Regular)
+    $label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter # Centraliza o texto
+    $form.Controls.Add($label)
+
+    $textBox = New-Object System.Windows.Forms.TextBox
+    $textBox.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do TextBox
+    $textBox.Location = New-Object System.Drawing.Point(10,50) # Reduz o espaçamento
+    $textBox.BackColor = [System.Drawing.Color]::FromArgb(50, 50, 50)
+    $textBox.ForeColor = [System.Drawing.Color]::White
+    $textBox.Font = New-Object System.Drawing.Font("Helvetica", 10)
+    $form.Controls.Add($textBox)
+
+    # Adiciona um botão para enviar o código
+    $button = New-Object System.Windows.Forms.Button
+    $button.Text = "&Autenticar"
+    $button.Size = New-Object System.Drawing.Size(200, 30) # Ajusta o tamanho do Button
+    $button.Location = New-Object System.Drawing.Point(10,90) # Reduz o espaçamento
+    $button.BackColor = [System.Drawing.Color]::FromArgb(30, 144, 255)
+    $button.ForeColor = [System.Drawing.Color]::White
+    $button.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $button.Font = New-Object System.Drawing.Font("Helvetica", 10, [System.Drawing.FontStyle]::Regular)
+    $form.Controls.Add($button)
+
+    # Centralizar controles no formulário
     $yOffset = ($form.ClientSize.Height - ($label.Height + $textBox.Height + $button.Height + 40)) / 2 + $titleBar.Height
     CenterControl -control $label -form $form -yOffset $yOffset
 
@@ -465,139 +459,171 @@ $form.add_SizeChanged({
 
     $yOffset += $textBox.Height + 20
     CenterControl -control $button -form $form -yOffset $yOffset
-})
 
-$button.Add_Click({
-    # Aqui você pode adicionar a lógica de autenticação
-    $2FACode=(Verify2FACode -credName $credName -code $textBox.Text)
-    if ($2FACode -eq $true) { # Verifica se o código 2FA
-        $timer.Stop()
-        [System.Windows.Forms.MessageBox]::Show("Código 2FA válido. Acesso permitido.")
-        $form.Close()
-    } else {
-        [System.Windows.Forms.MessageBox]::Show("Código 2FA inválido. Acesso negado.")
-        $form.Focus()
-        $textBox.Clear()
-        $textBox.Focus()
-    }
-})
-$form.Controls.Add($button)
-#############################################################################################################################################
+    # Atualizar layout ao redimensionar a tela
+    $form.add_SizeChanged({
+        $yOffset = ($form.ClientSize.Height - ($label.Height + $textBox.Height + $button.Height + 40)) / 2 + $titleBar.Height
+        CenterControl -control $label -form $form -yOffset $yOffset
 
-#############################################################################################################################################
-# Adiciona o evento KeyDown ao formulário
-$form.Add_KeyDown({
-    param($sender, $e)
-    if ($e.KeyCode -eq [System.Windows.Forms.Keys]::Enter) {
-        $button.PerformClick()
-    }
-})
-#############################################################################################################################################
+        $yOffset += $label.Height + 20
+        CenterControl -control $textBox -form $form -yOffset $yOffset
 
-#############################################################################################################################################
-# Evento para capturar Alt+F4
-$form.Add_KeyDown({
-    param($sender, $e)
-    if ($e.Alt -and $e.KeyCode -eq [System.Windows.Forms.Keys]::F4) {
-        $e.SuppressKeyPress = $true
-        $form.Focus()
-        $textBox.Focus()
-    }
-})
-#############################################################################################################################################
-# Timer para capturar e suprimir eventos de tecla
-# Cria um objeto Mutex
-$mutex = New-Object System.Threading.Mutex($false,"2FASecretKeyGetCredentialManagerMTX")
-#############################################################################################################################################
-$timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = 100 # Intervalo aumentado para 100 milissegundos
-$timer.Add_Tick({
-    # Tenta adquirir o mutex
-    $iGotMutex=$false
-    try {
-        $nGotMutex=0
-        while (!($iGotMutex=$mutex.WaitOne(10))) {
-            $nGotMutex++
-            if ($nGotMutex>10){
-                break
-            }
-        }        
-        if ($iGotMutex){
-            try {
-                $msg = New-Object Win32Functions+MSG
-                if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
-                    if ($msg.message -eq 0x0312) { # WM_HOTKEY
-                        $key = $global:hotkeys[$msg.wParam.ToInt32()]
-                        if ($key -eq "F4" -and ($msg.lParam.ToInt32() -band 0x1)) { # Alt+F4
-                            $form.Focus()
-                            $textBox.Focus()
-                        }
-                    }
-                    [Win32Functions]::TranslateMessage([ref]$msg) | Out-Null
-                    [Win32Functions]::DispatchMessage([ref]$msg) | Out-Null
+        $yOffset += $textBox.Height + 20
+        CenterControl -control $button -form $form -yOffset $yOffset
+    })
+
+    $button.Add_Click({
+        # Aqui você pode adicionar a lógica de autenticação
+        $2FACode=(Verify2FACode -credName $credName -code $textBox.Text)
+        if ($2FACode -eq $true) { # Verifica se o código 2FA
+            $timer.Stop()
+            [System.Windows.Forms.MessageBox]::Show("Código 2FA válido. Acesso permitido.")
+            $form.Close()
+        } else {
+            [System.Windows.Forms.MessageBox]::Show("Código 2FA inválido. Acesso negado.")
+            $form.Focus()
+            $textBox.Clear()
+            $textBox.Focus()
+        }
+    })
+    $form.Controls.Add($button)
+    #############################################################################################################################################
+
+    #############################################################################################################################################
+    # Adiciona o evento KeyDown ao formulário
+    $form.Add_KeyDown({
+        param($sender, $e)
+        if ($e.KeyCode -eq [System.Windows.Forms.Keys]::Enter) {
+            $button.PerformClick()
+        }
+    })
+    #############################################################################################################################################
+
+    #############################################################################################################################################
+    # Evento para capturar Alt+F4
+    $form.Add_KeyDown({
+        param($sender, $e)
+        if ($e.Alt -and $e.KeyCode -eq [System.Windows.Forms.Keys]::F4) {
+            $e.SuppressKeyPress = $true
+            $form.Focus()
+            $textBox.Focus()
+        }
+    })
+    #############################################################################################################################################
+    # Timer para capturar e suprimir eventos de tecla
+    # Cria um objeto Mutex
+    $mutex = New-Object System.Threading.Mutex($false,"2FASecretKeyGetCredentialManagerMTX")
+    #############################################################################################################################################
+    $timer = New-Object System.Windows.Forms.Timer
+    $timer.Interval = 100 # Intervalo aumentado para 100 milissegundos
+    $timer.Add_Tick({
+        # Tenta adquirir o mutex
+        $iGotMutex=$false
+        try {
+            $nGotMutex=0
+            while (!($iGotMutex=$mutex.WaitOne(10))) {
+                $nGotMutex++
+                if ($nGotMutex>10){
+                    break
                 }
-            } finally {
-                $iGotMutex=$false
-                # Libera o mutex
+            }        
+            if ($iGotMutex){
+                try {
+                    $msg = New-Object Win32Functions+MSG
+                    if ([Win32Functions]::GetMessage([ref]$msg, [IntPtr]::Zero, 0, 0)) {
+                        if ($msg.message -eq 0x0312) { # WM_HOTKEY
+                            $key = $global:hotkeys[$msg.wParam.ToInt32()]
+                            if ($key -eq "F4" -and ($msg.lParam.ToInt32() -band 0x1)) { # Alt+F4
+                                $form.Focus()
+                                $textBox.Focus()
+                            }
+                        }
+                        [Win32Functions]::TranslateMessage([ref]$msg) | Out-Null
+                        [Win32Functions]::DispatchMessage([ref]$msg) | Out-Null
+                    }
+                } finally {
+                    $iGotMutex=$false
+                    # Libera o mutex
+                    $mutex.ReleaseMutex()
+                }
+            }
+        } catch [System.Threading.AbandonedMutexException] {
+            Write-Error "Mutex abandonado detectado. Tentando readquirir..."
+            $iGotMutex = $true
+            $mutex = New-Object System.Threading.Mutex($false,"2FASecretKeyGetCredentialManagerMTX")
+        } catch {
+            Write-Error "Erro ao tentar adquirir o mutex: $_"
+        } finally {
+            if ($iGotMutex) {
+                # Libera o mutex se foi adquirido
                 $mutex.ReleaseMutex()
             }
         }
-    } catch [System.Threading.AbandonedMutexException] {
-        Write-Error "Mutex abandonado detectado. Tentando readquirir..."
-        $iGotMutex = $true
-        $mutex = New-Object System.Threading.Mutex($false,"2FASecretKeyGetCredentialManagerMTX")
-    } catch {
-        Write-Error "Erro ao tentar adquirir o mutex: $_"
-    } finally {
-        if ($iGotMutex) {
-            # Libera o mutex se foi adquirido
-            $mutex.ReleaseMutex()
+    })
+
+    # Evento para parar o timer ao bloquear a sessão e reiniciar ao desbloquear
+    Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "SessionSwitch" -Action {
+        if ($_.SessionSwitchReason -eq [Microsoft.Win32.SessionSwitchReason]::SessionLock) {
+            $timer.Stop()
+        } elseif ($_.SessionSwitchReason -eq [Microsoft.Win32.SessionSwitchReason]::SessionUnlock) {
+            $timer.Stop()
+            $timer.Start()
+            $form.Focus()
+            $textBox.Focus()
         }
     }
-})
 
-# Evento para parar o timer ao bloquear a sessão e reiniciar ao desbloquear
-Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "SessionSwitch" -Action {
-    if ($_.SessionSwitchReason -eq [Microsoft.Win32.SessionSwitchReason]::SessionLock) {
-        $timer.Stop()
-    } elseif ($_.SessionSwitchReason -eq [Microsoft.Win32.SessionSwitchReason]::SessionUnlock) {
-        $timer.Stop()
-        $timer.Start()
-        $form.Focus()
-        $textBox.Focus()
+    # Evento para monitorar mudanças de estado de energia
+    Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "PowerModeChanged" -Action {
+        if ($_.Mode -eq [Microsoft.Win32.PowerModes]::Suspend) {
+            $timer.Stop()
+        } elseif ($_.Mode -eq [Microsoft.Win32.PowerModes]::Resume) {
+            $timer.Stop()
+            $timer.Start()
+            $form.Focus()
+            $textBox.Focus()
+        }
     }
-}
 
-# Evento para monitorar mudanças de estado de energia
-Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "PowerModeChanged" -Action {
-    if ($_.Mode -eq [Microsoft.Win32.PowerModes]::Suspend) {
-        $timer.Stop()
-    } elseif ($_.Mode -eq [Microsoft.Win32.PowerModes]::Resume) {
-        $timer.Stop()
+    #############################################################################################################################################
+
+    #############################################################################################################################################
+    #Executar o formulário
+    $form.Add_Shown({
         $timer.Start()
-        $form.Focus()
         $textBox.Focus()
-    }
+        $form.Activate()
+    })
+    [System.Windows.Forms.Application]::Run($form)
+    #############################################################################################################################################
+
+} finally {
+
+    #############################################################################################################################################
+    # Dispose dos objetos
+    if ($timer) { $timer.Dispose() }
+    if ($form) { $form.Dispose() }
+    #############################################################################################################################################
+
+    #############################################################################################################################################
+    # Garbage collection
+    [System.GC]::Collect()
+    [System.GC]::WaitForPendingFinalizers()
+    #############################################################################################################################################
+
+    #############################################################################################################################################
+    # Reabilita o Task Manager e as teclas de atalho ao finalizar o script
+    EnableAllKeys
+    #############################################################################################################################################
+    
+    #############################################################################################################################################
+    # Limpeza de eventos
+    Unregister-Event -SourceIdentifier "SessionSwitch" -ErrorAction SilentlyContinue
+    Unregister-Event -SourceIdentifier "PowerModeChanged" -ErrorAction SilentlyContinue
+    #############################################################################################################################################
+    
+    #############################################################################################################################################
+    Clear
+    Exit 0
+    #############################################################################################################################################
 }
-
-#############################################################################################################################################
-
-#############################################################################################################################################
-#Executar o formulário
-$form.Add_Shown({
-    $timer.Start()
-    $textBox.Focus()
-    $form.Activate()
-})
-[System.Windows.Forms.Application]::Run($form)
-#############################################################################################################################################
-
-#############################################################################################################################################
-# Reabilita o Task Manager e as teclas de atalho ao finalizar o script
-EnableAllKeys
-#############################################################################################################################################
-
-#############################################################################################################################################
-Clear
-Exit 0
-#############################################################################################################################################
