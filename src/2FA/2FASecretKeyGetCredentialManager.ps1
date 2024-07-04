@@ -16,10 +16,7 @@
     * Github: https://github.com/naldodj
 #>
 #############################################################################################################################################
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
-Add-Type -AssemblyName "System.ComponentModel.Primitives"
-Add-Type -AssemblyName "System.Windows.Forms.Primitives"
+Add-Type -AssemblyName System.Windows.Forms, System.Drawing, "System.ComponentModel.Primitives", "System.Windows.Forms.Primitives"
 #############################################################################################################################################
 Add-Type -TypeDefinition @"
 using System;
