@@ -41,4 +41,6 @@
     - [Borland C++ Compiler version 5.8](https://hmgextended.com/files/MISC/bcc582.zip)
       - Extraia no diretório padrão
 
-## Compilação :
+## Compilação 
+
+    - Execute compile.bat 
