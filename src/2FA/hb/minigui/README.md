@@ -37,4 +37,8 @@
 - Baixe conforme os procedimentos descritos [aqui](https://hmgextended.com/download.html)
 
     - [Harbour MiniGUI Extended Edition 24.05 STD for Borland C++ 5.5](https://hmgextended.com/files/CONTRIB/hmg-24.06-pro.7z)
+      - Extraia no diretório padrão     
     - [Borland C++ Compiler version 5.8](https://hmgextended.com/files/MISC/bcc582.zip)
+      - Extraia no diretório padrão
+
+## Compilação :
