@@ -43,4 +43,6 @@
 
 ## Compilação 
 
-- Execute compile.bat 
+- Execute compile.bat
+ - Execute .\2FALines.exe para instalar o ScreenSaver
+ - Execute .\2FALines.exe /s para executar o ScreenSaver
