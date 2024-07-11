@@ -43,4 +43,4 @@
 
 ## Compilação 
 
-    - Execute compile.bat 
+- Execute compile.bat 
