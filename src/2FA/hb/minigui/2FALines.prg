@@ -27,6 +27,8 @@ ANNOUNCE RDDSYS
 #define PIXELMOVE  2
 #define CLR_DEFAULT  RGB( 255, 255, 0 )
 
+#define MOD_NOREPEAT 0x4000
+
 Static hPen
 Static aX, aY
 Static aPX, aPY
@@ -156,6 +158,9 @@ static procedure __DisableKeys(cForm)
         _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,k,{||DoMethod(cForm,"SetFocus")})
         _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
     next k
+
+    _DefineHotKey(cForm,MOD_NOREPEAT+MOD_WIN,VK_LWIN,{||DoMethod(cForm,"SetFocus")})
+    _DefineHotKey(cForm,MOD_NOREPEAT+MOD_WIN,VK_RWIN,{||DoMethod(cForm,"SetFocus")})
 
 return
 
