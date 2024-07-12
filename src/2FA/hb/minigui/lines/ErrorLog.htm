@@ -1,0 +1,1830 @@
+<!DOCTYPE html><html><head><meta charset="windows-1251"><title>Harbour MiniGUI Errorlog File</title><style>body{font-family:sans-serif;background-color:#fff;font-size:100%;color:#000;padding:15px}.summary,details summary{color:#069;background:#ffc;border:1px solid #9af;padding:5px;margin:10px 5px;cursor:pointer}.link{display:block;background:#cfc;text-decoration:none}h1{font-family:sans-serif;font-size:150%;color:#00c;font-weight:700;background-color:#f0f0f0}.updated{font-family:sans-serif;color:#c00;font-size:110%}.normaltext{font-family:sans-serif;font-size:100%;color:#000;font-weight:400;text-transform:none;text-decoration:none}.large-select{font-size:125%;padding:8px;margin:5px;background:#cdf}</style><script>const filterBy=(r,e,l,n=null)=>{let t=r.map(l);t=t.reduce((e,t)=>(t in e||(e[t]=0),e[t]++,e),{}),t=Object.entries(t).reduce((e,[t,r])=>(e[t]=[t,r,`[${r}] ${t}`],e),{});const c=document.querySelector(e);Object.values(t).sort((e,t)=>t[1]-e[1]).forEach(([e,,t])=>{const r=document.createElement("option");r.value=e,r.innerText=t,c.appendChild(r)});c.addEventListener("change",e=>{n&&n(c);const t=e.target.value;r.forEach(e=>((e,t)=>{var r;"null"!==t?(r=l(e),e.style.display=r===t?null:"none",console.log(e,e.style.display)):e.style.display=null})(e,t))})};document.addEventListener("DOMContentLoaded",function(e){var t=[...document.querySelectorAll(".record")],r=t=>document.querySelector("#extra-panel").querySelectorAll("select").forEach(e=>t!==e&&(e.selectedIndex=0));filterBy(t,"#filterByDate",e=>e.querySelector(".date").innerText,r),filterBy(t,"#filterByStacktrace",e=>e.querySelector(".stacktrace")?.childNodes[0]?.data.trim(),r),filterBy(t,"#filterByError",e=>e.querySelector(".error").innerText.replace(/(\r\n|\n|\r)/gm,"").replace(/\s{2,}/g," ").trim(),r),document.querySelector("#extra-panel").style.display=null,console.log("DOMContentLoaded")})</script></head><body><h1 style="text-align:center">Harbour MiniGUI Errorlog File</h1><div id="extra-panel" style="display:none"><select autocomplete="off" id="filterByDate" class="large-select"><option selected="selected" disabled="disabled" value="null">Filter by Date</option><option value="null">All dates</option></select> <select autocomplete="off" id="filterByStacktrace" class="large-select"><option selected="selected" disabled="disabled" value="null">Filter by StackTrace</option><option value="null">All stacktraces</option></select> <select autocomplete="off" id="filterByError" class="large-select"><option selected="selected" disabled="disabled" value="null">Filter by Error</option><option value="null">All errors</option></select></div></body></html><HR>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:03:45</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 2 secs<BR>
+<span class="error">Error MGERROR/0 Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(218) in module: 2FALines.prg
+<BR>
+</span></details>
+<details><summary>
+----------------------------- System Information ------------------------------
+<br/></summary>
+Workstation name...: DNA-TECH-01<BR>
+Active user name...: marin<BR>
+CPU type...........: 12th Gen Intel(R) Core(TM) i5-1235U [~2496 MHz]<BR>
+Hardware memory....: 16108 MB<BR>
+Available memory...: 1603 MB<BR>
+Current disk.......: F<BR>
+Current directory..: GitHub\naldodj-2FA-windows\src\2FA\hb\minigui<BR>
+Free disk space....: 20137 MB<BR>
+<BR>
+Operating system...: Windows 10 10.0<BR>
+MiniGUI version....: Harbour MiniGUI Extended Edition 24.06 (32-bit) ANSI (DEBUG)<BR>
+Harbour version....: Harbour 3.2.0dev (r2402161723)<BR>
+Harbour built on...: Feb 17 2024 10:14:50<BR>
+C/C++ compiler.....: Borland C++ 5.8.2 (32-bit)<BR>
+Multi Threading....: NO<BR>
+VM Optimization....: NO<BR>
+<BR>
+Current Work Area..: 1<BR>
+</details>
+<details><summary>
+-------------------------- Environmental Information --------------------------
+<br/></summary>
+SET ALTERNATE......: OFF<BR>
+SET ALTFILE........:<BR>
+SET AUTOPEN........: ON<BR>
+SET AUTORDER.......: 0<BR>
+SET AUTOSHARE......: 0<BR>
+SET CENTURY........: OFF<BR>
+SET COUNT..........: 0<BR>
+SET DATE FORMAT....: MM/DD/YY<BR>
+SET DBFLOCKSCHEME..: 0<BR>
+SET DEBUG..........: ON<BR>
+SET DECIMALS.......: 2<BR>
+SET DEFAULT........:<BR>
+SET DEFEXTENSIONS..: ON<BR>
+SET DELETED........: OFF<BR>
+SET DELIMCHARS.....: ::<BR>
+SET DELIMETERS.....: ON<BR>
+SET DIRCASE........: 0<BR>
+SET DIRSEPARATOR...: \<BR>
+SET EOL............: 13<BR>
+SET EPOCH..........: 1900<BR>
+SET ERRORLOG.......: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\ErrorLog.htm<BR>
+SET EXACT..........: OFF<BR>
+SET EXCLUSIVE......: ON<BR>
+SET EXTRA..........: OFF<BR>
+SET EXTRAFILE......:<BR>
+SET FILECASE.......: 0<BR>
+SET FIXED..........: OFF<BR>
+SET FORCEOPT.......: OFF<BR>
+SET HARDCOMMIT.....: ON<BR>
+SET IDLEREPEAT.....: ON<BR>
+SET LANGUAGE.......: en<BR>
+SET MARGIN.........: 0<BR>
+SET MBLOCKSIZE.....: 64<BR>
+SET MFILEEXT.......:<BR>
+SET OPTIMIZE.......: ON<BR>
+SET PATH...........:<BR>
+SET PRINTER........: OFF<BR>
+SET PRINTFILE......: LPT1<BR>
+SET SOFTSEEK.......: OFF<BR>
+SET TRIMFILENAME...: .F.<BR>
+SET UNIQUE.........: OFF<BR>
+</details>
+<details><summary>
+-------------------------- Detailed Work Area Items ---------------------------
+<br/></summary>
+</details>
+<details><summary>
+--------------------- Internal Error Handling Information ---------------------
+<br/></summary>
+Subsystem Call ....: MGERROR<BR>
+System Code .......: 0<BR>
+Default Status ....: .F.<BR>
+Description .......: Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.<BR>
+</details>
+<details><summary>
+------------------------- Available Memory Variables --------------------------
+<br/></summary>
+     NNOWINKEYS TYPE N [         0]<BR>
+     NDISABLETASKMGR TYPE N [         0]<BR>
+     CINIFILE TYPE C [C:\WINDOWS\control.ini]<BR>
+     NWIDTH TYPE N [      1360]<BR>
+     NHEIGHT TYPE N [       768]<BR>
+     NTYPE TYPE N [1]<BR>
+     NPOLIG TYPE N [5]<BR>
+     NCOLOR TYPE N [65535]<BR>
+<BR>
+</details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:05:09</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 1 mins 26 secs<BR>
+<span class="error">Error MGERROR/0 Release a window in its own ON RELEASE procedure or release the Main Window in any ON RELEASE procedure is not allowed. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from RELEASEALLWINDOWS(2418) in module: h_windows.prg
+<BR>
+Called from SHOWERROR(267) in module: ErrorSys.prg
+<BR>
+Called from DEFERROR(149) in module: ErrorSys.prg
+<BR>
+Called from (b)ERRORSYS(64) in module: ErrorSys.prg
+<BR>
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(218) in module: 2FALines.prg
+<BR>
+</span></details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:06:11</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 14 secs<BR>
+<span class="error">Error MGERROR/0 Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(218) in module: 2FALines.prg
+<BR>
+</span></details>
+<details><summary>
+----------------------------- System Information ------------------------------
+<br/></summary>
+Workstation name...: DNA-TECH-01<BR>
+Active user name...: marin<BR>
+CPU type...........: 12th Gen Intel(R) Core(TM) i5-1235U [~2496 MHz]<BR>
+Hardware memory....: 16108 MB<BR>
+Available memory...: 1806 MB<BR>
+Current disk.......: F<BR>
+Current directory..: GitHub\naldodj-2FA-windows\src\2FA\hb\minigui<BR>
+Free disk space....: 20137 MB<BR>
+<BR>
+Operating system...: Windows 10 10.0<BR>
+MiniGUI version....: Harbour MiniGUI Extended Edition 24.06 (32-bit) ANSI (DEBUG)<BR>
+Harbour version....: Harbour 3.2.0dev (r2402161723)<BR>
+Harbour built on...: Feb 17 2024 10:14:50<BR>
+C/C++ compiler.....: Borland C++ 5.8.2 (32-bit)<BR>
+Multi Threading....: NO<BR>
+VM Optimization....: NO<BR>
+<BR>
+Current Work Area..: 1<BR>
+</details>
+<details><summary>
+-------------------------- Environmental Information --------------------------
+<br/></summary>
+SET ALTERNATE......: OFF<BR>
+SET ALTFILE........:<BR>
+SET AUTOPEN........: ON<BR>
+SET AUTORDER.......: 0<BR>
+SET AUTOSHARE......: 0<BR>
+SET CENTURY........: OFF<BR>
+SET COUNT..........: 0<BR>
+SET DATE FORMAT....: MM/DD/YY<BR>
+SET DBFLOCKSCHEME..: 0<BR>
+SET DEBUG..........: ON<BR>
+SET DECIMALS.......: 2<BR>
+SET DEFAULT........:<BR>
+SET DEFEXTENSIONS..: ON<BR>
+SET DELETED........: OFF<BR>
+SET DELIMCHARS.....: ::<BR>
+SET DELIMETERS.....: ON<BR>
+SET DIRCASE........: 0<BR>
+SET DIRSEPARATOR...: \<BR>
+SET EOL............: 13<BR>
+SET EPOCH..........: 1900<BR>
+SET ERRORLOG.......: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\ErrorLog.htm<BR>
+SET EXACT..........: OFF<BR>
+SET EXCLUSIVE......: ON<BR>
+SET EXTRA..........: OFF<BR>
+SET EXTRAFILE......:<BR>
+SET FILECASE.......: 0<BR>
+SET FIXED..........: OFF<BR>
+SET FORCEOPT.......: OFF<BR>
+SET HARDCOMMIT.....: ON<BR>
+SET IDLEREPEAT.....: ON<BR>
+SET LANGUAGE.......: en<BR>
+SET MARGIN.........: 0<BR>
+SET MBLOCKSIZE.....: 64<BR>
+SET MFILEEXT.......:<BR>
+SET OPTIMIZE.......: ON<BR>
+SET PATH...........:<BR>
+SET PRINTER........: OFF<BR>
+SET PRINTFILE......: LPT1<BR>
+SET SOFTSEEK.......: OFF<BR>
+SET TRIMFILENAME...: .F.<BR>
+SET UNIQUE.........: OFF<BR>
+</details>
+<details><summary>
+-------------------------- Detailed Work Area Items ---------------------------
+<br/></summary>
+</details>
+<details><summary>
+--------------------- Internal Error Handling Information ---------------------
+<br/></summary>
+Subsystem Call ....: MGERROR<BR>
+System Code .......: 0<BR>
+Default Status ....: .F.<BR>
+Description .......: Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.<BR>
+</details>
+<details><summary>
+------------------------- Available Memory Variables --------------------------
+<br/></summary>
+     NNOWINKEYS TYPE N [         1]<BR>
+     NDISABLETASKMGR TYPE N [         1]<BR>
+     CINIFILE TYPE C [C:\WINDOWS\control.ini]<BR>
+     NWIDTH TYPE N [      1360]<BR>
+     NHEIGHT TYPE N [       768]<BR>
+     NTYPE TYPE N [1]<BR>
+     NPOLIG TYPE N [5]<BR>
+     NCOLOR TYPE N [65535]<BR>
+<BR>
+</details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:06:11</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 14 secs<BR>
+<span class="error">Error MGERROR/0 Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from MESSAGEBOXINDIRECT(0)
+<BR>
+Called from _MSGBOX(178) in module: h_msgbox.prg
+<BR>
+Called from MSGSTOP(146) in module: h_msgbox.prg
+<BR>
+Called from SHOWERROR(232) in module: ErrorSys.prg
+<BR>
+Called from DEFERROR(149) in module: ErrorSys.prg
+<BR>
+Called from (b)ERRORSYS(64) in module: ErrorSys.prg
+<BR>
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(218) in module: 2FALines.prg
+<BR>
+</span></details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:06:23</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 1 secs<BR>
+<span class="error">Error MGERROR/0 Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(218) in module: 2FALines.prg
+<BR>
+</span></details>
+<details><summary>
+----------------------------- System Information ------------------------------
+<br/></summary>
+Workstation name...: DNA-TECH-01<BR>
+Active user name...: marin<BR>
+CPU type...........: 12th Gen Intel(R) Core(TM) i5-1235U [~2496 MHz]<BR>
+Hardware memory....: 16108 MB<BR>
+Available memory...: 1795 MB<BR>
+Current disk.......: F<BR>
+Current directory..: GitHub\naldodj-2FA-windows\src\2FA\hb\minigui<BR>
+Free disk space....: 20137 MB<BR>
+<BR>
+Operating system...: Windows 10 10.0<BR>
+MiniGUI version....: Harbour MiniGUI Extended Edition 24.06 (32-bit) ANSI (DEBUG)<BR>
+Harbour version....: Harbour 3.2.0dev (r2402161723)<BR>
+Harbour built on...: Feb 17 2024 10:14:50<BR>
+C/C++ compiler.....: Borland C++ 5.8.2 (32-bit)<BR>
+Multi Threading....: NO<BR>
+VM Optimization....: NO<BR>
+<BR>
+Current Work Area..: 1<BR>
+</details>
+<details><summary>
+-------------------------- Environmental Information --------------------------
+<br/></summary>
+SET ALTERNATE......: OFF<BR>
+SET ALTFILE........:<BR>
+SET AUTOPEN........: ON<BR>
+SET AUTORDER.......: 0<BR>
+SET AUTOSHARE......: 0<BR>
+SET CENTURY........: OFF<BR>
+SET COUNT..........: 0<BR>
+SET DATE FORMAT....: MM/DD/YY<BR>
+SET DBFLOCKSCHEME..: 0<BR>
+SET DEBUG..........: ON<BR>
+SET DECIMALS.......: 2<BR>
+SET DEFAULT........:<BR>
+SET DEFEXTENSIONS..: ON<BR>
+SET DELETED........: OFF<BR>
+SET DELIMCHARS.....: ::<BR>
+SET DELIMETERS.....: ON<BR>
+SET DIRCASE........: 0<BR>
+SET DIRSEPARATOR...: \<BR>
+SET EOL............: 13<BR>
+SET EPOCH..........: 1900<BR>
+SET ERRORLOG.......: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\ErrorLog.htm<BR>
+SET EXACT..........: OFF<BR>
+SET EXCLUSIVE......: ON<BR>
+SET EXTRA..........: OFF<BR>
+SET EXTRAFILE......:<BR>
+SET FILECASE.......: 0<BR>
+SET FIXED..........: OFF<BR>
+SET FORCEOPT.......: OFF<BR>
+SET HARDCOMMIT.....: ON<BR>
+SET IDLEREPEAT.....: ON<BR>
+SET LANGUAGE.......: en<BR>
+SET MARGIN.........: 0<BR>
+SET MBLOCKSIZE.....: 64<BR>
+SET MFILEEXT.......:<BR>
+SET OPTIMIZE.......: ON<BR>
+SET PATH...........:<BR>
+SET PRINTER........: OFF<BR>
+SET PRINTFILE......: LPT1<BR>
+SET SOFTSEEK.......: OFF<BR>
+SET TRIMFILENAME...: .F.<BR>
+SET UNIQUE.........: OFF<BR>
+</details>
+<details><summary>
+-------------------------- Detailed Work Area Items ---------------------------
+<br/></summary>
+</details>
+<details><summary>
+--------------------- Internal Error Handling Information ---------------------
+<br/></summary>
+Subsystem Call ....: MGERROR<BR>
+System Code .......: 0<BR>
+Default Status ....: .F.<BR>
+Description .......: Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.<BR>
+</details>
+<details><summary>
+------------------------- Available Memory Variables --------------------------
+<br/></summary>
+     NNOWINKEYS TYPE N [         1]<BR>
+     NDISABLETASKMGR TYPE N [         1]<BR>
+     CINIFILE TYPE C [C:\WINDOWS\control.ini]<BR>
+     NWIDTH TYPE N [      1360]<BR>
+     NHEIGHT TYPE N [       768]<BR>
+     NTYPE TYPE N [1]<BR>
+     NPOLIG TYPE N [5]<BR>
+     NCOLOR TYPE N [65535]<BR>
+<BR>
+</details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:07:09</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 47 secs<BR>
+<span class="error">Error MGERROR/0 Release a window in its own ON RELEASE procedure or release the Main Window in any ON RELEASE procedure is not allowed. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from RELEASEALLWINDOWS(2418) in module: h_windows.prg
+<BR>
+Called from SHOWERROR(267) in module: ErrorSys.prg
+<BR>
+Called from DEFERROR(149) in module: ErrorSys.prg
+<BR>
+Called from (b)ERRORSYS(64) in module: ErrorSys.prg
+<BR>
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(218) in module: 2FALines.prg
+<BR>
+</span></details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:19:33</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 0 secs<BR>
+<span class="error">Error MGERROR/0 Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from INKEYGUI(0)
+<BR>
+Called from SUPPRESSKEYANDMOUSEEVENTS(2728) in module: h_windows.prg
+<BR>
+Called from _PROCESSINITPROCEDURE(1808) in module: h_windows.prg
+<BR>
+Called from _ACTIVATEWINDOW(1631) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(224) in module: 2FALines.prg
+<BR>
+</span></details>
+<details><summary>
+----------------------------- System Information ------------------------------
+<br/></summary>
+Workstation name...: DNA-TECH-01<BR>
+Active user name...: marin<BR>
+CPU type...........: 12th Gen Intel(R) Core(TM) i5-1235U [~2496 MHz]<BR>
+Hardware memory....: 16108 MB<BR>
+Available memory...: 1946 MB<BR>
+Current disk.......: F<BR>
+Current directory..: GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines<BR>
+Free disk space....: 20135 MB<BR>
+<BR>
+Operating system...: Windows 10 10.0<BR>
+MiniGUI version....: Harbour MiniGUI Extended Edition 24.06 (32-bit) ANSI (DEBUG)<BR>
+Harbour version....: Harbour 3.2.0dev (r2402161723)<BR>
+Harbour built on...: Feb 17 2024 10:14:50<BR>
+C/C++ compiler.....: Borland C++ 5.8.2 (32-bit)<BR>
+Multi Threading....: NO<BR>
+VM Optimization....: NO<BR>
+<BR>
+Current Work Area..: 1<BR>
+</details>
+<details><summary>
+-------------------------- Environmental Information --------------------------
+<br/></summary>
+SET ALTERNATE......: OFF<BR>
+SET ALTFILE........:<BR>
+SET AUTOPEN........: ON<BR>
+SET AUTORDER.......: 0<BR>
+SET AUTOSHARE......: 0<BR>
+SET CENTURY........: OFF<BR>
+SET COUNT..........: 0<BR>
+SET DATE FORMAT....: MM/DD/YY<BR>
+SET DBFLOCKSCHEME..: 0<BR>
+SET DEBUG..........: ON<BR>
+SET DECIMALS.......: 2<BR>
+SET DEFAULT........:<BR>
+SET DEFEXTENSIONS..: ON<BR>
+SET DELETED........: OFF<BR>
+SET DELIMCHARS.....: ::<BR>
+SET DELIMETERS.....: ON<BR>
+SET DIRCASE........: 0<BR>
+SET DIRSEPARATOR...: \<BR>
+SET EOL............: 13<BR>
+SET EPOCH..........: 1900<BR>
+SET ERRORLOG.......: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\ErrorLog.htm<BR>
+SET EXACT..........: OFF<BR>
+SET EXCLUSIVE......: ON<BR>
+SET EXTRA..........: OFF<BR>
+SET EXTRAFILE......:<BR>
+SET FILECASE.......: 0<BR>
+SET FIXED..........: OFF<BR>
+SET FORCEOPT.......: OFF<BR>
+SET HARDCOMMIT.....: ON<BR>
+SET IDLEREPEAT.....: ON<BR>
+SET LANGUAGE.......: en<BR>
+SET MARGIN.........: 0<BR>
+SET MBLOCKSIZE.....: 64<BR>
+SET MFILEEXT.......:<BR>
+SET OPTIMIZE.......: ON<BR>
+SET PATH...........:<BR>
+SET PRINTER........: OFF<BR>
+SET PRINTFILE......: LPT1<BR>
+SET SOFTSEEK.......: OFF<BR>
+SET TRIMFILENAME...: .F.<BR>
+SET UNIQUE.........: OFF<BR>
+</details>
+<details><summary>
+-------------------------- Detailed Work Area Items ---------------------------
+<br/></summary>
+</details>
+<details><summary>
+--------------------- Internal Error Handling Information ---------------------
+<br/></summary>
+Subsystem Call ....: MGERROR<BR>
+System Code .......: 0<BR>
+Default Status ....: .F.<BR>
+Description .......: Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.<BR>
+</details>
+<details><summary>
+------------------------- Available Memory Variables --------------------------
+<br/></summary>
+     NNOWINKEYS TYPE N [         1]<BR>
+     NDISABLETASKMGR TYPE N [         1]<BR>
+     CINIFILE TYPE C [C:\WINDOWS\control.ini]<BR>
+     NWIDTH TYPE N [      1360]<BR>
+     NHEIGHT TYPE N [       768]<BR>
+     NTYPE TYPE N [1]<BR>
+     NPOLIG TYPE N [5]<BR>
+     NCOLOR TYPE N [65535]<BR>
+<BR>
+</details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:20:58</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 1 mins 25 secs<BR>
+<span class="error">Error MGERROR/0 Release a window in its own ON RELEASE procedure or release the Main Window in any ON RELEASE procedure is not allowed. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from RELEASEALLWINDOWS(2418) in module: h_windows.prg
+<BR>
+Called from SHOWERROR(267) in module: errorsys.prg
+<BR>
+Called from DEFERROR(149) in module: errorsys.prg
+<BR>
+Called from (b)ERRORSYS(64) in module: errorsys.prg
+<BR>
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from INKEYGUI(0)
+<BR>
+Called from SUPPRESSKEYANDMOUSEEVENTS(2728) in module: h_windows.prg
+<BR>
+Called from _PROCESSINITPROCEDURE(1808) in module: h_windows.prg
+<BR>
+Called from _ACTIVATEWINDOW(1631) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(224) in module: 2FALines.prg
+<BR>
+</span></details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:21:35</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 2 secs<BR>
+<span class="error">Error MGERROR/0 Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(224) in module: 2FALines.prg
+<BR>
+</span></details>
+<details><summary>
+----------------------------- System Information ------------------------------
+<br/></summary>
+Workstation name...: DNA-TECH-01<BR>
+Active user name...: marin<BR>
+CPU type...........: 12th Gen Intel(R) Core(TM) i5-1235U [~2496 MHz]<BR>
+Hardware memory....: 16108 MB<BR>
+Available memory...: 1880 MB<BR>
+Current disk.......: F<BR>
+Current directory..: GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines<BR>
+Free disk space....: 20135 MB<BR>
+<BR>
+Operating system...: Windows 10 10.0<BR>
+MiniGUI version....: Harbour MiniGUI Extended Edition 24.06 (32-bit) ANSI (DEBUG)<BR>
+Harbour version....: Harbour 3.2.0dev (r2402161723)<BR>
+Harbour built on...: Feb 17 2024 10:14:50<BR>
+C/C++ compiler.....: Borland C++ 5.8.2 (32-bit)<BR>
+Multi Threading....: NO<BR>
+VM Optimization....: NO<BR>
+<BR>
+Current Work Area..: 1<BR>
+</details>
+<details><summary>
+-------------------------- Environmental Information --------------------------
+<br/></summary>
+SET ALTERNATE......: OFF<BR>
+SET ALTFILE........:<BR>
+SET AUTOPEN........: ON<BR>
+SET AUTORDER.......: 0<BR>
+SET AUTOSHARE......: 0<BR>
+SET CENTURY........: OFF<BR>
+SET COUNT..........: 0<BR>
+SET DATE FORMAT....: MM/DD/YY<BR>
+SET DBFLOCKSCHEME..: 0<BR>
+SET DEBUG..........: ON<BR>
+SET DECIMALS.......: 2<BR>
+SET DEFAULT........:<BR>
+SET DEFEXTENSIONS..: ON<BR>
+SET DELETED........: OFF<BR>
+SET DELIMCHARS.....: ::<BR>
+SET DELIMETERS.....: ON<BR>
+SET DIRCASE........: 0<BR>
+SET DIRSEPARATOR...: \<BR>
+SET EOL............: 13<BR>
+SET EPOCH..........: 1900<BR>
+SET ERRORLOG.......: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\ErrorLog.htm<BR>
+SET EXACT..........: OFF<BR>
+SET EXCLUSIVE......: ON<BR>
+SET EXTRA..........: OFF<BR>
+SET EXTRAFILE......:<BR>
+SET FILECASE.......: 0<BR>
+SET FIXED..........: OFF<BR>
+SET FORCEOPT.......: OFF<BR>
+SET HARDCOMMIT.....: ON<BR>
+SET IDLEREPEAT.....: ON<BR>
+SET LANGUAGE.......: en<BR>
+SET MARGIN.........: 0<BR>
+SET MBLOCKSIZE.....: 64<BR>
+SET MFILEEXT.......:<BR>
+SET OPTIMIZE.......: ON<BR>
+SET PATH...........:<BR>
+SET PRINTER........: OFF<BR>
+SET PRINTFILE......: LPT1<BR>
+SET SOFTSEEK.......: OFF<BR>
+SET TRIMFILENAME...: .F.<BR>
+SET UNIQUE.........: OFF<BR>
+</details>
+<details><summary>
+-------------------------- Detailed Work Area Items ---------------------------
+<br/></summary>
+</details>
+<details><summary>
+--------------------- Internal Error Handling Information ---------------------
+<br/></summary>
+Subsystem Call ....: MGERROR<BR>
+System Code .......: 0<BR>
+Default Status ....: .F.<BR>
+Description .......: Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.<BR>
+</details>
+<details><summary>
+------------------------- Available Memory Variables --------------------------
+<br/></summary>
+     NNOWINKEYS TYPE N [         1]<BR>
+     NDISABLETASKMGR TYPE N [         1]<BR>
+     CINIFILE TYPE C [C:\WINDOWS\control.ini]<BR>
+     NWIDTH TYPE N [      1360]<BR>
+     NHEIGHT TYPE N [       768]<BR>
+     NTYPE TYPE N [1]<BR>
+     NPOLIG TYPE N [5]<BR>
+     NCOLOR TYPE N [65535]<BR>
+<BR>
+</details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:21:59</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 26 secs<BR>
+<span class="error">Error MGERROR/0 Release a window in its own ON RELEASE procedure or release the Main Window in any ON RELEASE procedure is not allowed. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from RELEASEALLWINDOWS(2418) in module: h_windows.prg
+<BR>
+Called from SHOWERROR(267) in module: errorsys.prg
+<BR>
+Called from DEFERROR(149) in module: errorsys.prg
+<BR>
+Called from (b)ERRORSYS(64) in module: errorsys.prg
+<BR>
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(224) in module: 2FALines.prg
+<BR>
+</span></details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:24:31</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 1 secs<BR>
+<span class="error">Error MGERROR/0 Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(224) in module: 2FALines.prg
+<BR>
+</span></details>
+<details><summary>
+----------------------------- System Information ------------------------------
+<br/></summary>
+Workstation name...: DNA-TECH-01<BR>
+Active user name...: marin<BR>
+CPU type...........: 12th Gen Intel(R) Core(TM) i5-1235U [~2496 MHz]<BR>
+Hardware memory....: 16108 MB<BR>
+Available memory...: 2448 MB<BR>
+Current disk.......: F<BR>
+Current directory..: GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines<BR>
+Free disk space....: 20135 MB<BR>
+<BR>
+Operating system...: Windows 10 10.0<BR>
+MiniGUI version....: Harbour MiniGUI Extended Edition 24.06 (32-bit) ANSI (DEBUG)<BR>
+Harbour version....: Harbour 3.2.0dev (r2402161723)<BR>
+Harbour built on...: Feb 17 2024 10:14:50<BR>
+C/C++ compiler.....: Borland C++ 5.8.2 (32-bit)<BR>
+Multi Threading....: NO<BR>
+VM Optimization....: NO<BR>
+<BR>
+Current Work Area..: 1<BR>
+</details>
+<details><summary>
+-------------------------- Environmental Information --------------------------
+<br/></summary>
+SET ALTERNATE......: OFF<BR>
+SET ALTFILE........:<BR>
+SET AUTOPEN........: ON<BR>
+SET AUTORDER.......: 0<BR>
+SET AUTOSHARE......: 0<BR>
+SET CENTURY........: OFF<BR>
+SET COUNT..........: 0<BR>
+SET DATE FORMAT....: MM/DD/YY<BR>
+SET DBFLOCKSCHEME..: 0<BR>
+SET DEBUG..........: ON<BR>
+SET DECIMALS.......: 2<BR>
+SET DEFAULT........:<BR>
+SET DEFEXTENSIONS..: ON<BR>
+SET DELETED........: OFF<BR>
+SET DELIMCHARS.....: ::<BR>
+SET DELIMETERS.....: ON<BR>
+SET DIRCASE........: 0<BR>
+SET DIRSEPARATOR...: \<BR>
+SET EOL............: 13<BR>
+SET EPOCH..........: 1900<BR>
+SET ERRORLOG.......: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\ErrorLog.htm<BR>
+SET EXACT..........: OFF<BR>
+SET EXCLUSIVE......: ON<BR>
+SET EXTRA..........: OFF<BR>
+SET EXTRAFILE......:<BR>
+SET FILECASE.......: 0<BR>
+SET FIXED..........: OFF<BR>
+SET FORCEOPT.......: OFF<BR>
+SET HARDCOMMIT.....: ON<BR>
+SET IDLEREPEAT.....: ON<BR>
+SET LANGUAGE.......: en<BR>
+SET MARGIN.........: 0<BR>
+SET MBLOCKSIZE.....: 64<BR>
+SET MFILEEXT.......:<BR>
+SET OPTIMIZE.......: ON<BR>
+SET PATH...........:<BR>
+SET PRINTER........: OFF<BR>
+SET PRINTFILE......: LPT1<BR>
+SET SOFTSEEK.......: OFF<BR>
+SET TRIMFILENAME...: .F.<BR>
+SET UNIQUE.........: OFF<BR>
+</details>
+<details><summary>
+-------------------------- Detailed Work Area Items ---------------------------
+<br/></summary>
+</details>
+<details><summary>
+--------------------- Internal Error Handling Information ---------------------
+<br/></summary>
+Subsystem Call ....: MGERROR<BR>
+System Code .......: 0<BR>
+Default Status ....: .F.<BR>
+Description .......: Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.<BR>
+</details>
+<details><summary>
+------------------------- Available Memory Variables --------------------------
+<br/></summary>
+     NNOWINKEYS TYPE N [         1]<BR>
+     NDISABLETASKMGR TYPE N [         1]<BR>
+     CINIFILE TYPE C [C:\WINDOWS\control.ini]<BR>
+     NWIDTH TYPE N [      1360]<BR>
+     NHEIGHT TYPE N [       768]<BR>
+     NTYPE TYPE N [1]<BR>
+     NPOLIG TYPE N [5]<BR>
+     NCOLOR TYPE N [65535]<BR>
+<BR>
+</details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:24:33</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 3 secs<BR>
+<span class="error">Error MGERROR/0 Release a window in its own ON RELEASE procedure or release the Main Window in any ON RELEASE procedure is not allowed. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from RELEASEALLWINDOWS(2418) in module: h_windows.prg
+<BR>
+Called from SHOWERROR(267) in module: errorsys.prg
+<BR>
+Called from DEFERROR(149) in module: errorsys.prg
+<BR>
+Called from (b)ERRORSYS(64) in module: errorsys.prg
+<BR>
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(224) in module: 2FALines.prg
+<BR>
+</span></details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:30:34</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 3 secs<BR>
+<span class="error">Error BASE/1003 Variable does not exist: NTYPE</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from (b)MAIN(215) in module: 2FALines.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(106) in module: h_scrsaver.prg
+<BR>
+Called from _DOCONTROLEVENTPROCEDURE(2045) in module: h_windows.prg
+<BR>
+Called from EVENTS(1532) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SUPPRESSKEYANDMOUSEEVENTS(2727) in module: h_windows.prg
+<BR>
+Called from _PROCESSINITPROCEDURE(1808) in module: h_windows.prg
+<BR>
+Called from _ACTIVATEWINDOW(1616) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5907) in module: h_controlmisc.prg
+<BR>
+Called from GET2FACODE(503) in module: 2FALines.prg
+<BR>
+Called from __VALID2FACODE(450) in module: 2FALines.prg
+<BR>
+Called from VALID2FACODE$(424) in module: 2FALines.prg
+<BR>
+</span></details>
+<details><summary>
+----------------------------- System Information ------------------------------
+<br/></summary>
+Workstation name...: DNA-TECH-01<BR>
+Active user name...: marin<BR>
+CPU type...........: 12th Gen Intel(R) Core(TM) i5-1235U [~2496 MHz]<BR>
+Hardware memory....: 16108 MB<BR>
+Available memory...: 1874 MB<BR>
+Current disk.......: F<BR>
+Current directory..: GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines<BR>
+Free disk space....: 20103 MB<BR>
+<BR>
+Operating system...: Windows 10 10.0<BR>
+MiniGUI version....: Harbour MiniGUI Extended Edition 24.06 (32-bit) ANSI (DEBUG)<BR>
+Harbour version....: Harbour 3.2.0dev (r2402161723)<BR>
+Harbour built on...: Feb 17 2024 10:14:50<BR>
+C/C++ compiler.....: Borland C++ 5.8.2 (32-bit)<BR>
+Multi Threading....: NO<BR>
+VM Optimization....: NO<BR>
+<BR>
+Current Work Area..: 1<BR>
+</details>
+<details><summary>
+-------------------------- Environmental Information --------------------------
+<br/></summary>
+SET ALTERNATE......: OFF<BR>
+SET ALTFILE........:<BR>
+SET AUTOPEN........: ON<BR>
+SET AUTORDER.......: 0<BR>
+SET AUTOSHARE......: 0<BR>
+SET CENTURY........: OFF<BR>
+SET COUNT..........: 0<BR>
+SET DATE FORMAT....: MM/DD/YY<BR>
+SET DBFLOCKSCHEME..: 0<BR>
+SET DEBUG..........: ON<BR>
+SET DECIMALS.......: 2<BR>
+SET DEFAULT........:<BR>
+SET DEFEXTENSIONS..: ON<BR>
+SET DELETED........: OFF<BR>
+SET DELIMCHARS.....: ::<BR>
+SET DELIMETERS.....: ON<BR>
+SET DIRCASE........: 0<BR>
+SET DIRSEPARATOR...: \<BR>
+SET EOL............: 13<BR>
+SET EPOCH..........: 1900<BR>
+SET ERRORLOG.......: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\ErrorLog.htm<BR>
+SET EXACT..........: OFF<BR>
+SET EXCLUSIVE......: ON<BR>
+SET EXTRA..........: OFF<BR>
+SET EXTRAFILE......:<BR>
+SET FILECASE.......: 0<BR>
+SET FIXED..........: OFF<BR>
+SET FORCEOPT.......: OFF<BR>
+SET HARDCOMMIT.....: ON<BR>
+SET IDLEREPEAT.....: ON<BR>
+SET LANGUAGE.......: en<BR>
+SET MARGIN.........: 0<BR>
+SET MBLOCKSIZE.....: 64<BR>
+SET MFILEEXT.......:<BR>
+SET OPTIMIZE.......: ON<BR>
+SET PATH...........:<BR>
+SET PRINTER........: OFF<BR>
+SET PRINTFILE......: LPT1<BR>
+SET SOFTSEEK.......: OFF<BR>
+SET TRIMFILENAME...: .F.<BR>
+SET UNIQUE.........: OFF<BR>
+</details>
+<details><summary>
+-------------------------- Detailed Work Area Items ---------------------------
+<br/></summary>
+</details>
+<details><summary>
+--------------------- Internal Error Handling Information ---------------------
+<br/></summary>
+Subsystem Call ....: BASE<BR>
+System Code .......: 1003<BR>
+Default Status ....: .F.<BR>
+Description .......: Variable does not exist<BR>
+Operation .........: NTYPE<BR>
+</details>
+<details><summary>
+------------------------- Available Memory Variables --------------------------
+<br/></summary>
+     NNOWINKEYS TYPE N [         1]<BR>
+     NDISABLETASKMGR TYPE N [         1]<BR>
+     LVALID2FAEXEC TYPE L [.T.]<BR>
+     CINIFILE TYPE C [C:\WINDOWS\control.ini]<BR>
+</details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:30:34</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 3 secs<BR>
+<span class="error">Error BASE/1003 Variable does not exist: NTYPE</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from (b)MAIN(215) in module: 2FALines.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(106) in module: h_scrsaver.prg
+<BR>
+Called from _DOCONTROLEVENTPROCEDURE(2045) in module: h_windows.prg
+<BR>
+Called from EVENTS(1532) in module: h_events.prg
+<BR>
+Called from MESSAGEBOXINDIRECT(0)
+<BR>
+Called from _MSGBOX(178) in module: h_msgbox.prg
+<BR>
+Called from MSGSTOP(146) in module: h_msgbox.prg
+<BR>
+Called from SHOWERROR(232) in module: errorsys.prg
+<BR>
+Called from DEFERROR(149) in module: errorsys.prg
+<BR>
+Called from (b)ERRORSYS(64) in module: errorsys.prg
+<BR>
+Called from (b)MAIN(215) in module: 2FALines.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(106) in module: h_scrsaver.prg
+<BR>
+Called from _DOCONTROLEVENTPROCEDURE(2045) in module: h_windows.prg
+<BR>
+Called from EVENTS(1532) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SUPPRESSKEYANDMOUSEEVENTS(2727) in module: h_windows.prg
+<BR>
+Called from _PROCESSINITPROCEDURE(1808) in module: h_windows.prg
+<BR>
+Called from _ACTIVATEWINDOW(1616) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5907) in module: h_controlmisc.prg
+<BR>
+Called from GET2FACODE(503) in module: 2FALines.prg
+<BR>
+Called from __VALID2FACODE(450) in module: 2FALines.prg
+<BR>
+Called from VALID2FACODE$(424) in module: 2FALines.prg
+<BR>
+</span></details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:30:44</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 1 secs<BR>
+<span class="error">Error MGERROR/0 Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(224) in module: 2FALines.prg
+<BR>
+</span></details>
+<details><summary>
+----------------------------- System Information ------------------------------
+<br/></summary>
+Workstation name...: DNA-TECH-01<BR>
+Active user name...: marin<BR>
+CPU type...........: 12th Gen Intel(R) Core(TM) i5-1235U [~2496 MHz]<BR>
+Hardware memory....: 16108 MB<BR>
+Available memory...: 1933 MB<BR>
+Current disk.......: F<BR>
+Current directory..: GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines<BR>
+Free disk space....: 20103 MB<BR>
+<BR>
+Operating system...: Windows 10 10.0<BR>
+MiniGUI version....: Harbour MiniGUI Extended Edition 24.06 (32-bit) ANSI (DEBUG)<BR>
+Harbour version....: Harbour 3.2.0dev (r2402161723)<BR>
+Harbour built on...: Feb 17 2024 10:14:50<BR>
+C/C++ compiler.....: Borland C++ 5.8.2 (32-bit)<BR>
+Multi Threading....: NO<BR>
+VM Optimization....: NO<BR>
+<BR>
+Current Work Area..: 1<BR>
+</details>
+<details><summary>
+-------------------------- Environmental Information --------------------------
+<br/></summary>
+SET ALTERNATE......: OFF<BR>
+SET ALTFILE........:<BR>
+SET AUTOPEN........: ON<BR>
+SET AUTORDER.......: 0<BR>
+SET AUTOSHARE......: 0<BR>
+SET CENTURY........: OFF<BR>
+SET COUNT..........: 0<BR>
+SET DATE FORMAT....: MM/DD/YY<BR>
+SET DBFLOCKSCHEME..: 0<BR>
+SET DEBUG..........: ON<BR>
+SET DECIMALS.......: 2<BR>
+SET DEFAULT........:<BR>
+SET DEFEXTENSIONS..: ON<BR>
+SET DELETED........: OFF<BR>
+SET DELIMCHARS.....: ::<BR>
+SET DELIMETERS.....: ON<BR>
+SET DIRCASE........: 0<BR>
+SET DIRSEPARATOR...: \<BR>
+SET EOL............: 13<BR>
+SET EPOCH..........: 1900<BR>
+SET ERRORLOG.......: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\ErrorLog.htm<BR>
+SET EXACT..........: OFF<BR>
+SET EXCLUSIVE......: ON<BR>
+SET EXTRA..........: OFF<BR>
+SET EXTRAFILE......:<BR>
+SET FILECASE.......: 0<BR>
+SET FIXED..........: OFF<BR>
+SET FORCEOPT.......: OFF<BR>
+SET HARDCOMMIT.....: ON<BR>
+SET IDLEREPEAT.....: ON<BR>
+SET LANGUAGE.......: en<BR>
+SET MARGIN.........: 0<BR>
+SET MBLOCKSIZE.....: 64<BR>
+SET MFILEEXT.......:<BR>
+SET OPTIMIZE.......: ON<BR>
+SET PATH...........:<BR>
+SET PRINTER........: OFF<BR>
+SET PRINTFILE......: LPT1<BR>
+SET SOFTSEEK.......: OFF<BR>
+SET TRIMFILENAME...: .F.<BR>
+SET UNIQUE.........: OFF<BR>
+</details>
+<details><summary>
+-------------------------- Detailed Work Area Items ---------------------------
+<br/></summary>
+</details>
+<details><summary>
+--------------------- Internal Error Handling Information ---------------------
+<br/></summary>
+Subsystem Call ....: MGERROR<BR>
+System Code .......: 0<BR>
+Default Status ....: .F.<BR>
+Description .......: Control: Timer_SSaver Of Form_SSaver Not defined. Program terminated.<BR>
+</details>
+<details><summary>
+------------------------- Available Memory Variables --------------------------
+<br/></summary>
+     NNOWINKEYS TYPE N [         1]<BR>
+     NDISABLETASKMGR TYPE N [         1]<BR>
+     CINIFILE TYPE C [C:\WINDOWS\control.ini]<BR>
+     NWIDTH TYPE N [      1360]<BR>
+     NHEIGHT TYPE N [       768]<BR>
+     NTYPE TYPE N [1]<BR>
+     NPOLIG TYPE N [5]<BR>
+     NCOLOR TYPE N [65535]<BR>
+<BR>
+</details>
+<HR>
+</div>
+<div class="record">
+<p class="updated">
+Date: <span class="date">07/12/2024</span> Time: <span class="time">08:30:47</span><BR>
+Application: F:\GitHub\naldodj-2FA-windows\src\2FA\hb\minigui\lines\2FALines.exe<BR>
+User: DNA-TECH-01 / marin<BR>
+Time from start: 0 days 0 hours 0 mins 4 secs<BR>
+<span class="error">Error MGERROR/0 Release a window in its own ON RELEASE procedure or release the Main Window in any ON RELEASE procedure is not allowed. Program terminated.</span>
+</p>
+<details><summary>
+--------------------------------- Stack Trace ---------------------------------
+<br/></summary><span class="stacktrace">
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from RELEASEALLWINDOWS(2418) in module: h_windows.prg
+<BR>
+Called from SHOWERROR(267) in module: errorsys.prg
+<BR>
+Called from DEFERROR(149) in module: errorsys.prg
+<BR>
+Called from (b)ERRORSYS(64) in module: errorsys.prg
+<BR>
+Called from MSGMINIGUIERROR(100) in module: h_error.prg
+<BR>
+Called from VERIFYCONTROLDEFINED(6637) in module: h_controlmisc.prg
+<BR>
+Called from SETPROPERTY(4329) in module: h_controlmisc.prg
+<BR>
+Called from _RELEASESCRSAVER(202) in module: h_scrsaver.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2429) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOEVENTS(0)
+<BR>
+Called from SCAN(142) in module: h_windows.prg
+<BR>
+Called from CHECKSTATIC(116) in module: h_windows.prg
+<BR>
+Called from RELEASEALLWINDOWS(2517) in module: h_windows.prg
+<BR>
+Called from _RELEASEWINDOW(2563) in module: h_windows.prg
+<BR>
+Called from DOMETHOD(5919) in module: h_controlmisc.prg
+<BR>
+Called from (b)_BEGINSCRSAVER(100) in module: h_scrsaver.prg
+<BR>
+Called from _DOWINDOWEVENTPROCEDURE(2078) in module: h_windows.prg
+<BR>
+Called from EVENTS(1440) in module: h_events.prg
+<BR>
+Called from DOMESSAGELOOP(0)
+<BR>
+Called from _ACTIVATEWINDOW(1644) in module: h_windows.prg
+<BR>
+Called from _ACTIVATESCRSAVER(131) in module: h_scrsaver.prg
+<BR>
+Called from MAIN(224) in module: 2FALines.prg
+<BR>
+</span></details>
+<HR>
+</div>
+</BODY></HTML>

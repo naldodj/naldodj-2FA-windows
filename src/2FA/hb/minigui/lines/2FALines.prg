@@ -13,6 +13,13 @@ ANNOUNCE RDDSYS
 #include "i_keybd.ch"
 #include "i_keybd_ext.ch"
 
+#ifdef __XHARBOUR__
+    #include "hbcompat.ch"
+    #xtranslate hb_Run( [<x,...>] ) => __Run( <x> )
+    #xtranslate hb_DirCreate( [<x,...>] ) => MakeDir( <x> )
+#endif
+
+#define MOD_NOREPEAT 0x4000
 #xcommand DEFINE LBLTEXTBOX <name> ROW <nRow> COL <nCol> [ WIDTH <nW> ] CAPTION <cCaption> ;
       => ;
       CreateTextboxWithLabel( <(name)>, <nRow>, <nCol>, <cCaption>, <nW> )
@@ -26,8 +33,6 @@ ANNOUNCE RDDSYS
 #define PS_SOLID   0
 #define PIXELMOVE  2
 #define CLR_DEFAULT  RGB( 255, 255, 0 )
-
-#define MOD_NOREPEAT 0x4000
 
 Static hPen
 Static aX, aY
@@ -164,7 +169,7 @@ static procedure __DisableKeys(cForm)
 
     _DefineHotKey(cForm,MOD_NOREPEAT+MOD_WIN,VK_LWIN,{||DoMethod(cForm,"SetFocus")})
     _DefineHotKey(cForm,MOD_NOREPEAT+MOD_WIN,VK_RWIN,{||DoMethod(cForm,"SetFocus")})
-    
+
 return
 
 *--------------------------------------------------------*
@@ -204,7 +209,7 @@ Procedure Main( cParameters )
 			MAIN ;
 			ON INIT (__DisableKeys("Form_SSaver"),.T.) ;
             ON RELEASE (DeleteObject( hPen ), .T.) ;
-			ON PAINT DoLines(nType) ;
+			ON PAINT (DoLines(nType)) ;
 			INTERVAL .02 ;
 			BACKCOLOR BLACK
 	ENDIF
@@ -429,14 +434,14 @@ return MsgInfo( PROGRAM + VERSION + CRLF + ;
         local cCmd,cSecretKey,c2FACode,cTmpSecretKeyFile,lRet:=.T.
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
         if (hb_FileExists(cFileSecret))
-            MakeDir("C:\tmp\")
+            hb_DirCreate("C:\tmp\")
             cTmpSecretKeyFile:="C:\tmp\ttop.txt"
             if (hb_FileExists(cTmpSecretKeyFile))
                 hb_FileDelete(cTmpSecretKeyFile)
             endif
             cSecretKey:=hb_MemoRead(cFileSecret)
             cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
-            __Run(cCmd)
+            hb_Run(cCmd)
             lRet:=hb_FileExists(cTmpSecretKeyFile)
             if (lRet)
                 cSecretKey:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
@@ -483,7 +488,7 @@ return MsgInfo( PROGRAM + VERSION + CRLF + ;
             ROW nHeight - GetTitleHeight() - GetBorderHeight() - iif(IsSeven(), 2, 0) - 35
             COL nWidth  - GetBorderWidth() - iif(IsSeven(), 2, 0) - 125
             WIDTH 70
-            CAPTION "OK"
+            CAPTION "&OK"
             ACTION (c2FACode:=Form_2FA.Text_1.Value,ThisWindow.Release)
          END BUTTON
 
