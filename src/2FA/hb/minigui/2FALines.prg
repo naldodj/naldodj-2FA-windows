@@ -132,6 +132,7 @@ static procedure __DisableKeys(cForm)
         _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,aKeysDisable[k],{||DoMethod(cForm,"SetFocus")})
     next k
 
+    //VK_0...VK_9
     for k:=48 to 57
         _DefineHotKey(cForm,MOD_ALT,k,{||DoMethod(cForm,"SetFocus")})
         _DefineHotKey(cForm,MOD_WIN,k,{||DoMethod(cForm,"SetFocus")})
@@ -141,6 +142,7 @@ static procedure __DisableKeys(cForm)
         _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
     next k
 
+    //VK_A...VK_Z
     for k:=65 to 90
         _DefineHotKey(cForm,MOD_ALT,k,{||DoMethod(cForm,"SetFocus")})
         _DefineHotKey(cForm,MOD_WIN,k,{||DoMethod(cForm,"SetFocus")})
@@ -150,6 +152,7 @@ static procedure __DisableKeys(cForm)
         _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
     next k
 
+    //VK_F1...VK_F24
     for k:=112 to 135
         _DefineHotKey(cForm,MOD_ALT,k,{||DoMethod(cForm,"SetFocus")})
         _DefineHotKey(cForm,MOD_WIN,k,{||DoMethod(cForm,"SetFocus")})
@@ -161,7 +164,7 @@ static procedure __DisableKeys(cForm)
 
     _DefineHotKey(cForm,MOD_NOREPEAT+MOD_WIN,VK_LWIN,{||DoMethod(cForm,"SetFocus")})
     _DefineHotKey(cForm,MOD_NOREPEAT+MOD_WIN,VK_RWIN,{||DoMethod(cForm,"SetFocus")})
-
+    
 return
 
 *--------------------------------------------------------*
