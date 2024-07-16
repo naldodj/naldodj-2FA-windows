@@ -593,10 +593,11 @@ RETURN cValue
         endif
     return(lRet)
 
-static function __Valid2FACode()
+    static function __Valid2FACode()
         local cCmd,cSecretKey,c2FACode,cTmp2FACode,cTmpSecretKeyFile,lRet:=.T.
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
         local cCurDir:=(CurDrive()+":\"+CurDir())
+        local cUser:=GetUserName()
         if (hb_FileExists(cFileSecret))
             hb_DirCreate("C:\tmp\")
             cTmpSecretKeyFile:="C:\tmp\ttop.txt"
@@ -614,8 +615,10 @@ static function __Valid2FACode()
                     cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
                     lRet:=(!Empty(cTmp2FACode))
                     if (!lRet)
+                        DirChange("C:\cygwin64\home\"+cUser)
                         cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
                         hb_Run(cCmd)
+                        DirChange(cCurDir)
                         lRet:=hb_FileExists(cTmpSecretKeyFile)
                         if (lRet)
                             cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
@@ -624,8 +627,10 @@ static function __Valid2FACode()
                     endif
                 endif
             else
+                DirChange("C:\cygwin64\home\"+cUser)
                 cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
                 hb_Run(cCmd)
+                DirChange(cCurDir)
                 lRet:=hb_FileExists(cTmpSecretKeyFile)
                 if (lRet)
                     cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
