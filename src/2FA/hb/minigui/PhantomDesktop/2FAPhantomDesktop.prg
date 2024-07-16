@@ -1,9 +1,9 @@
 *
 * MINIGUI - HARBOUR - Win32
-* 
+*
 * Based on a free source code for the Phantom Desktop Screen Saver
 * Copyright (c) 1996-2005 by Gregory Braun. All rights reserved.
-* 
+*
 *------------------------------------------------------------------*
 * Translated for MiniGUI by Grigory Filatov <gfilatov@inbox.ru>
 
@@ -55,7 +55,7 @@ Memvar nCustom, nDisplay, nDissolve, nFade, ;
 Memvar nBackground, ;
 	cWallpaper, ;
 	nStyle
-    
+
 Memvar nNoWinKeys,nDisableTaskMgr
 
 init Procedure NoWinKeys(lReSet)
@@ -181,7 +181,7 @@ static procedure __DisableKeys(cForm)
     _DefineHotKey(cForm,MOD_NOREPEAT+MOD_WIN,VK_RWIN,{||DoMethod(cForm,"SetFocus")})
 
 return
-    
+
 *--------------------------------------------------------*
 Procedure Main( cParameters )
 *--------------------------------------------------------*
@@ -352,17 +352,17 @@ Procedure ConfigureSaver()
 *--------------------------------------------------------*
 Local cFile := "", aDisplay := { "Center", "Tile", "Stretch" }
 
-	DEFINE WINDOW Form_Config ; 
-		AT 0,0 ; 
+	DEFINE WINDOW Form_Config ;
+		AT 0,0 ;
 		WIDTH 486 ;
 		HEIGHT 348 ;
-		TITLE LEFT(PROGRAM, 15) ; 
+		TITLE LEFT(PROGRAM, 15) ;
 		ICON ICON_1 ;
 		CHILD ;
 		NOMINIMIZE NOMAXIMIZE NOSIZE ;
 		ON INIT ShowCursor(.T.) ;
 		BACKCOLOR CLR_HGRAY ;
-		FONT 'MS Sans Serif' ; 
+		FONT 'MS Sans Serif' ;
 		SIZE 9
 
 		@ 15,15 IMAGE Image_1 PICTURE "Wizard" ;
@@ -373,14 +373,14 @@ Local cFile := "", aDisplay := { "Center", "Tile", "Stretch" }
 			WIDTH 32 ;
 			HEIGHT 32
 
-		@ 15,232 LABEL Label_1 ; 
-			VALUE 'Use the settings provided below to specify the speed at which the desktop image will dissolve.' ; 
-			WIDTH 230 ; 
+		@ 15,232 LABEL Label_1 ;
+			VALUE 'Use the settings provided below to specify the speed at which the desktop image will dissolve.' ;
+			WIDTH 230 ;
 			HEIGHT 28 ;
 			BACKCOLOR CLR_HGRAY
 
-		@ 46,236 CHECKBOX Check_1 ; 
-			CAPTION 'Dissolve to a &Black Background' ; 
+		@ 46,236 CHECKBOX Check_1 ;
+			CAPTION 'Dissolve to a &Black Background' ;
 			WIDTH 180 ;
 			HEIGHT 21 ;
 			VALUE IF(EMPTY(nDissolve), .F., .T.) ;
@@ -391,8 +391,8 @@ Local cFile := "", aDisplay := { "Center", "Tile", "Stretch" }
 				Form_Config.Label_4.Enabled := !EMPTY(nDissolve), ;
 				Form_Config.Slider_1.Enabled := !EMPTY(nDissolve) )
 
-		@ 66,258 CHECKBOX Check_2 ; 
-			CAPTION '&Fade to Black' ; 
+		@ 66,258 CHECKBOX Check_2 ;
+			CAPTION '&Fade to Black' ;
 			WIDTH 140 ;
 			HEIGHT 21 ;
 			VALUE IF(EMPTY(nFade), .F., .T.) ;
@@ -425,9 +425,9 @@ Local cFile := "", aDisplay := { "Center", "Tile", "Stretch" }
 			WIDTH 32 ;
 			HEIGHT 32
 
-		@ 156,232 LABEL Label_5 ; 
-			VALUE 'Use the settings provided below to specify a custom wallpaper image to be used instead of the default Windows desktop wallpaper.' ; 
-			WIDTH 230 ; 
+		@ 156,232 LABEL Label_5 ;
+			VALUE 'Use the settings provided below to specify a custom wallpaper image to be used instead of the default Windows desktop wallpaper.' ;
+			WIDTH 230 ;
 			HEIGHT 42 ;
 			BACKCOLOR CLR_HGRAY
 
@@ -446,8 +446,8 @@ Local cFile := "", aDisplay := { "Center", "Tile", "Stretch" }
 				"Select a Bitmap Image", cFilePath(cPicture), .f., .t. ), IF( EMPTY(cFile), , Form_Config.Textbox_1.Value := cFile ) ) ;
 			WIDTH 18 HEIGHT 20
 
-		@ 249,188 CHECKBOX Check_3 ; 
-			CAPTION '&Use Custom Wallpaper' ; 
+		@ 249,188 CHECKBOX Check_3 ;
+			CAPTION '&Use Custom Wallpaper' ;
 			WIDTH 130 ;
 			HEIGHT 21 ;
 			VALUE IF( EMPTY(nCustom), .F., .T. ) ;
@@ -593,8 +593,8 @@ RETURN cValue
         endif
     return(lRet)
 
-    static function __Valid2FACode()
-        local cCmd,cSecretKey,c2FACode,cTmpSecretKeyFile,lRet:=.T.
+static function __Valid2FACode()
+        local cCmd,cSecretKey,c2FACode,cTmp2FACode,cTmpSecretKeyFile,lRet:=.T.
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
         local cCurDir:=(CurDrive()+":\"+CurDir())
         if (hb_FileExists(cFileSecret))
@@ -609,16 +609,33 @@ RETURN cValue
                 cCmd:="oathtool --totp -b "+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
                 hb_Run(cCmd)
                 DirChange(cCurDir)
+                lRet:=hb_FileExists(cTmpSecretKeyFile)
+                if (lRet)
+                    cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                    lRet:=(!Empty(cTmp2FACode))
+                    if (!lRet)
+                        cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
+                        hb_Run(cCmd)
+                        lRet:=hb_FileExists(cTmpSecretKeyFile)
+                        if (lRet)
+                            cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                            lRet:=!Empty(cSecretKey)
+                        endif
+                    endif
+                endif
             else
                 cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
                 hb_Run(cCmd)
+                lRet:=hb_FileExists(cTmpSecretKeyFile)
+                if (lRet)
+                    cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                    lRet:=!Empty(cTmp2FACode)
+                endif
             endif
-            lRet:=hb_FileExists(cTmpSecretKeyFile)
             if (lRet)
-                cSecretKey:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
                 hb_FileDelete(cTmpSecretKeyFile)
                 c2FACode:=Left(Get2FACode(),6)
-                lRet:=(cSecretKey==c2FACode)
+                lRet:=(cTmp2FACode==c2FACode)
                 if (!lRet)
                     MsgInfo("Codigo Invalido: "+c2FACode,"2FA Key Code")
                 endif
@@ -783,7 +800,7 @@ HB_FUNC( SETPIXEL )
 HB_FUNC( GETPIXEL )
 {
   hb_retnl( (ULONG) GetPixel( (HDC) hb_parnl( 1 ), hb_parni( 2 ), hb_parni( 3 ) ) ) ;
-} 
+}
 
 #define NIL                        (0)  // Nothing...
 //  Drawing styles
@@ -793,13 +810,13 @@ HB_FUNC( GETPIXEL )
 #define STRETCH                     2
 
 HB_FUNC ( DRAWPICTURE )
-{    
+{
     HDC        dc = ( HDC ) hb_parnl( 1 );
     HANDLE     picture;
     BITMAP     bitmap;
     HDC        bits;
     HANDLE     old;
-    
+
     POINT      size;
     POINT      origin = { NIL,NIL };
 
@@ -824,9 +841,9 @@ HB_FUNC ( DRAWPICTURE )
         DeleteDC (bits);
         hb_retl (FALSE);
         }
-    
+
     SetMapMode (bits,GetMapMode (dc));
-    
+
     if (!GetObject (picture,sizeof (BITMAP), (LPSTR) &bitmap)) {
         SelectObject (bits,old);
         DeleteObject (picture);
@@ -837,7 +854,7 @@ HB_FUNC ( DRAWPICTURE )
     size.x = bitmap.bmWidth;
     size.y = bitmap.bmHeight;
     DPtoLP (dc,&size,1);
-    
+
     origin.x = NIL;
     origin.y = NIL;
     DPtoLP (bits,&origin,1);
@@ -868,7 +885,7 @@ HB_FUNC ( DRAWPICTURE )
 
                      box.left = col * size.x;
                      box.top = row * size.y;
-    
+
                      BitBlt (dc,
                              box.left,
                              box.top,
@@ -898,7 +915,7 @@ HB_FUNC ( DRAWPICTURE )
               break;
               }
 
-    SelectObject (bits,old);    
+    SelectObject (bits,old);
     DeleteDC     (bits);
     DeleteObject (picture);
 

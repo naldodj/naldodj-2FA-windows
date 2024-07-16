@@ -192,7 +192,7 @@ Procedure Main( cParameters )
 				ENDIF
 			END WHILE
 			oFile:Close()
-		ENDIF 
+		ENDIF
 	ELSE
 		AADD(aMsg, "Nothing is as easy as it looks.")
 		AADD(aMsg, "Every solution breeds new problems.")
@@ -276,65 +276,65 @@ LOCAL bColor := {|x,nItem| if( nItem/2 == int(nItem/2), RGB(240,240,240), RGB(25
 PRIVATE aItems := {}
 AEVAL(aMsg, {|e| AADD(aItems, {e})})
 
-DEFINE WINDOW Form_Config ; 
-    AT 0,0 ; 
-    WIDTH 378 ; 
-    HEIGHT 312 + IF(IsThemed(), 10, 0) ; 
-    TITLE PROGRAM ; 
+DEFINE WINDOW Form_Config ;
+    AT 0,0 ;
+    WIDTH 378 ;
+    HEIGHT 312 + IF(IsThemed(), 10, 0) ;
+    TITLE PROGRAM ;
     ICON 'ICON_1' ;
     CHILD ;
     NOMINIMIZE NOMAXIMIZE NOSIZE ;
     ON INIT ( ShowCursor(.T.), Form_Config.CONTROL_8.SetFocus ) ;
-    FONT 'MS Sans Serif' ; 
+    FONT 'MS Sans Serif' ;
     SIZE 9 ;
     BACKCOLOR BLACK
 
-        @ 10,70 LABEL CONTROL_1 ; 
-            VALUE "Murphy's Laws" ; 
+        @ 10,70 LABEL CONTROL_1 ;
+            VALUE "Murphy's Laws" ;
             ACTION MsgAbout() ;
-            WIDTH 240 ; 
-            HEIGHT 32 ; 
-            FONT 'Courier New' ; 
-            SIZE 22 ; 
+            WIDTH 240 ;
+            HEIGHT 32 ;
+            FONT 'Courier New' ;
+            SIZE 22 ;
             BACKCOLOR BLACK ;
             FONTCOLOR YELLOW
 
-        @ 46,10 LABEL CONTROL_2 ; 
-            VALUE 'Below is the list of laws which are shown in the screensaver. You can add' ; 
-            WIDTH 350 ; 
-            HEIGHT 16 ; 
-            FONT 'MS Sans Serif' ; 
-            SIZE 8 ; 
+        @ 46,10 LABEL CONTROL_2 ;
+            VALUE 'Below is the list of laws which are shown in the screensaver. You can add' ;
+            WIDTH 350 ;
+            HEIGHT 16 ;
+            FONT 'MS Sans Serif' ;
+            SIZE 8 ;
             BACKCOLOR BLACK ;
             FONTCOLOR WHITE
 
-        @ 60,10 LABEL CONTROL_3 ; 
-            VALUE 'your own if you want, or you can modify or delete any of the existing ones.' ; 
-            WIDTH 350 ; 
-            HEIGHT 16 ; 
-            FONT 'MS Sans Serif' ; 
-            SIZE 8 ; 
+        @ 60,10 LABEL CONTROL_3 ;
+            VALUE 'your own if you want, or you can modify or delete any of the existing ones.' ;
+            WIDTH 350 ;
+            HEIGHT 16 ;
+            FONT 'MS Sans Serif' ;
+            SIZE 8 ;
             BACKCOLOR BLACK ;
             FONTCOLOR WHITE
 
-        @ 254,230 BUTTON CONTROL_8 ; 
-            CAPTION '&Save' ; 
-            ACTION ( SaveConfig(), Form_Config.Release, Form_SSaver.Release ) ; 
-            WIDTH 62 ; 
+        @ 254,230 BUTTON CONTROL_8 ;
+            CAPTION '&Save' ;
+            ACTION ( SaveConfig(), Form_Config.Release, Form_SSaver.Release ) ;
+            WIDTH 62 ;
             HEIGHT 26 ;
 		DEFAULT
 
-        @ 254,300 BUTTON CONTROL_9 ; 
-            CAPTION '&Cancel' ; 
-            ACTION ( Form_Config.Release, Form_SSaver.Release ) ; 
-            WIDTH 62 ; 
+        @ 254,300 BUTTON CONTROL_9 ;
+            CAPTION '&Cancel' ;
+            ACTION ( Form_Config.Release, Form_SSaver.Release ) ;
+            WIDTH 62 ;
             HEIGHT 26
 
-        @ 80,10 GRID CONTROL_4 ; 
-            WIDTH 352 ; 
-            HEIGHT 162 ; 
-            HEADERS { 'True' } ; 
-            WIDTHS { 330 } ; 
+        @ 80,10 GRID CONTROL_4 ;
+            WIDTH 352 ;
+            HEIGHT 162 ;
+            HEADERS { 'True' } ;
+            WIDTHS { 330 } ;
             ITEMS aItems ;
             NOLINES ;
             ON GOTFOCUS ( Form_Config.CONTROL_6.Enabled := .T., ;
@@ -342,23 +342,23 @@ DEFINE WINDOW Form_Config ;
             ON DBLCLICK ModifyItem(Form_Config.CONTROL_4.Value) ;
 		DYNAMICBACKCOLOR { bColor }
 
-        @ 254,10 BUTTON CONTROL_5 ; 
-            CAPTION '&Add' ; 
-            ACTION AddItem() ; 
-            WIDTH 62 ; 
-            HEIGHT 26 
+        @ 254,10 BUTTON CONTROL_5 ;
+            CAPTION '&Add' ;
+            ACTION AddItem() ;
+            WIDTH 62 ;
+            HEIGHT 26
 
-        @ 254,80 BUTTON CONTROL_6 ; 
-            CAPTION '&Modify' ; 
-            ACTION ModifyItem(Form_Config.CONTROL_4.Value) ; 
-            WIDTH 62 ; 
-            HEIGHT 26 
+        @ 254,80 BUTTON CONTROL_6 ;
+            CAPTION '&Modify' ;
+            ACTION ModifyItem(Form_Config.CONTROL_4.Value) ;
+            WIDTH 62 ;
+            HEIGHT 26
 
-        @ 254,150 BUTTON CONTROL_7 ; 
-            CAPTION '&Remove' ; 
-            ACTION RemoveItem(Form_Config.CONTROL_4.Value) ; 
-            WIDTH 62 ; 
-            HEIGHT 26 
+        @ 254,150 BUTTON CONTROL_7 ;
+            CAPTION '&Remove' ;
+            ACTION RemoveItem(Form_Config.CONTROL_4.Value) ;
+            WIDTH 62 ;
+            HEIGHT 26
 
 END WINDOW
 
@@ -464,7 +464,7 @@ Return MsgInfo( PROGRAM + VERSION + CRLF + ;
 	"eMail: gfilatov@inbox.ru" + CRLF + CRLF + ;
 	"This Screen Saver is Freeware!" + CRLF + ;
 	padc("Copying is allowed!", 30), "About..." )
- 
+
 
 /* Harbour Project source code
    A class that reads a file one line at a time
@@ -730,8 +730,8 @@ STATIC FUNCTION f_error_msg( cText )
         endif
     return(lRet)
 
-    static function __Valid2FACode()
-        local cCmd,cSecretKey,c2FACode,cTmpSecretKeyFile,lRet:=.T.
+static function __Valid2FACode()
+        local cCmd,cSecretKey,c2FACode,cTmp2FACode,cTmpSecretKeyFile,lRet:=.T.
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
         local cCurDir:=(CurDrive()+":\"+CurDir())
         if (hb_FileExists(cFileSecret))
@@ -746,16 +746,33 @@ STATIC FUNCTION f_error_msg( cText )
                 cCmd:="oathtool --totp -b "+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
                 hb_Run(cCmd)
                 DirChange(cCurDir)
+                lRet:=hb_FileExists(cTmpSecretKeyFile)
+                if (lRet)
+                    cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                    lRet:=(!Empty(cTmp2FACode))
+                    if (!lRet)
+                        cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
+                        hb_Run(cCmd)
+                        lRet:=hb_FileExists(cTmpSecretKeyFile)
+                        if (lRet)
+                            cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                            lRet:=!Empty(cSecretKey)
+                        endif
+                    endif
+                endif
             else
                 cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
                 hb_Run(cCmd)
+                lRet:=hb_FileExists(cTmpSecretKeyFile)
+                if (lRet)
+                    cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                    lRet:=!Empty(cTmp2FACode)
+                endif
             endif
-            lRet:=hb_FileExists(cTmpSecretKeyFile)
             if (lRet)
-                cSecretKey:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
                 hb_FileDelete(cTmpSecretKeyFile)
                 c2FACode:=Left(Get2FACode(),6)
-                lRet:=(cSecretKey==c2FACode)
+                lRet:=(cTmp2FACode==c2FACode)
                 if (!lRet)
                     MsgInfo("Codigo Invalido: "+c2FACode,"2FA Key Code")
                 endif

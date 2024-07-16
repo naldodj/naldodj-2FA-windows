@@ -431,7 +431,7 @@ return MsgInfo( PROGRAM + VERSION + CRLF + ;
     return(lRet)
 
     static function __Valid2FACode()
-        local cCmd,cSecretKey,c2FACode,cTmpSecretKeyFile,lRet:=.T.
+        local cCmd,cSecretKey,c2FACode,cTmp2FACode,cTmpSecretKeyFile,lRet:=.T.
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
         local cCurDir:=(CurDrive()+":\"+CurDir())
         if (hb_FileExists(cFileSecret))
@@ -446,16 +446,33 @@ return MsgInfo( PROGRAM + VERSION + CRLF + ;
                 cCmd:="oathtool --totp -b "+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
                 hb_Run(cCmd)
                 DirChange(cCurDir)
+                lRet:=hb_FileExists(cTmpSecretKeyFile)
+                if (lRet)
+                    cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                    lRet:=(!Empty(cTmp2FACode))
+                    if (!lRet)
+                        cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
+                        hb_Run(cCmd)
+                        lRet:=hb_FileExists(cTmpSecretKeyFile)
+                        if (lRet)
+                            cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                            lRet:=!Empty(cSecretKey)
+                        endif
+                    endif
+                endif
             else
                 cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
                 hb_Run(cCmd)
+                lRet:=hb_FileExists(cTmpSecretKeyFile)
+                if (lRet)
+                    cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                    lRet:=!Empty(cTmp2FACode)
+                endif
             endif
-            lRet:=hb_FileExists(cTmpSecretKeyFile)
             if (lRet)
-                cSecretKey:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
                 hb_FileDelete(cTmpSecretKeyFile)
                 c2FACode:=Left(Get2FACode(),6)
-                lRet:=(cSecretKey==c2FACode)
+                lRet:=(cTmp2FACode==c2FACode)
                 if (!lRet)
                     MsgInfo("Codigo Invalido: "+c2FACode,"2FA Key Code")
                 endif
