@@ -30,6 +30,29 @@
         cd oath-toolkit-2.6.9
         ./configure
         make
+        cd oathtool
+        
+        # show dependencies
+        dependencies=$(ldd ./oathtool.exe | awk '{print $3}')
+        
+        # create a folder in c:/
+        mkdir -p /cygdrive/c/tools/oathtool
+        
+        # copy all
+        cp ./oathtool.exe /cygdrive/c/tools/oathtool
+        for dep in $dependencies; do
+            cp "$dep" /cygdrive/c/tools/oathtool
+        done
+        
+        cd ../liboath/.libs
+        cp *.dll /cygdrive/c/tools/oathtool
+        
+        # delete trash
+        cd ../../..
+        rm -rf ./oath-toolkit-2.6.9
+        
+        # exit cygwin64 terminal
+        exit        
         ```
 
 ## Instalação :: Harbour MiniGUI Extended Edition
