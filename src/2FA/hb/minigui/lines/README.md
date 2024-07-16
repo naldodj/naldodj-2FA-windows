@@ -30,9 +30,9 @@
         cd oath-toolkit-2.6.9
         ./configure
         make
-        cd oathtool
         
         # show dependencies
+        cd oathtool
         dependencies=$(ldd ./oathtool.exe | awk '{print $3}')
         
         # create a folder in c:/
