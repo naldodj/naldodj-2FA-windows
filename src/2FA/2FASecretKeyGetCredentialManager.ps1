@@ -87,7 +87,7 @@ public class CustomForm : Form {
             // Prevent resizing
             return;
         }
-        
+
         if (m.Msg == WM_NCLBUTTONDOWN || m.Msg == WM_NCLBUTTONUP || m.Msg == WM_NCMOUSEMOVE) {
             // Prevent resizing and keep the window maximized
             this.WindowState = FormWindowState.Maximized;
@@ -103,7 +103,7 @@ public class CustomForm : Form {
             // Prevent losing focus
             SetForegroundWindow(this.Handle);
         }
-        
+
         base.WndProc(ref m);
     }
 }
@@ -148,7 +148,16 @@ public class Win32Functions {
 "@
 #############################################################################################################################################
 function EnableTaskManager {
-    Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableTaskMgr" -ErrorAction SilentlyContinue
+    $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
+    if (-not (Test-Path $regPath)) {
+        New-Item -Path $regPath -Force
+    }
+    Set-ItemProperty -Path $regPath -Name "DisableTaskMgr" -Value 0
+    $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
+    if (-not (Test-Path $regPath)) {
+        New-Item -Path $regPath -Force
+    }
+    Set-ItemProperty -Path $regPath -Name "TaskbarEndTask" -Value 1
 }
 #############################################################################################################################################
 
@@ -160,6 +169,11 @@ function DisableTaskManager {
         New-Item -Path $regPath -Force
     }
     Set-ItemProperty -Path $regPath -Name "DisableTaskMgr" -Value 1
+    $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
+    if (-not (Test-Path $regPath)) {
+        New-Item -Path $regPath -Force
+    }
+    Set-ItemProperty -Path $regPath -Name "TaskbarEndTask" -Value 0
 }
 #############################################################################################################################################
 
@@ -233,7 +247,7 @@ function DisableAllKeys {
     DisableWindowsKey
     # Desativar o descanso de tela
     #powercfg -change -monitor-timeout-ac 0
-    #powercfg -change -monitor-timeout-dc 0    
+    #powercfg -change -monitor-timeout-dc 0
 }
 #############################################################################################################################################
 
@@ -247,7 +261,7 @@ function EnableAllKeys {
     EnableWindowsKey
     # restaurar as configurações de descanso de tela
     #powercfg -change -monitor-timeout-ac 10
-    #powercfg -change -monitor-timeout-dc 10    
+    #powercfg -change -monitor-timeout-dc 10
 }
 #############################################################################################################################################
 
@@ -523,7 +537,7 @@ try {
                 if ($nGotMutex>10){
                     break
                 }
-            }        
+            }
             if ($iGotMutex){
                 try {
                     $msg = New-Object Win32Functions+MSG
@@ -612,13 +626,13 @@ try {
     # Reabilita o Task Manager e as teclas de atalho ao finalizar o script
     EnableAllKeys
     #############################################################################################################################################
-    
+
     #############################################################################################################################################
     # Limpeza de eventos
     Unregister-Event -SourceIdentifier "SessionSwitch" -ErrorAction SilentlyContinue
     Unregister-Event -SourceIdentifier "PowerModeChanged" -ErrorAction SilentlyContinue
     #############################################################################################################################################
-    
+
     #############################################################################################################################################
     Clear
     Exit 0

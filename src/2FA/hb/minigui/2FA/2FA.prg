@@ -16,7 +16,7 @@
 
 #xcommand END LBLTEXTBOX =>;
 
-Memvar nNoWinKeys,nDisableTaskMgr
+Memvar nNoWinKeys,nDisableTaskMgr,nTaskbarEndTask
 
 init Procedure NoWinKeys(lReSet)
     if (type("nNoWinKeys")!="N")
@@ -27,6 +27,9 @@ init Procedure NoWinKeys(lReSet)
         public nDisableTaskMgr:=GetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\System","DisableTaskMgr","N")
         hb_default(@nDisableTaskMgr,0)
     endif
+    if (type("nTaskbarEndTask")!="N")
+        public nTaskbarEndTask:=1
+    endif    
     __NoWinKeys(.F.)
 return
 
@@ -34,6 +37,20 @@ static function __NoWinKeys(lReSet)
     hb_default(@lReSet,.F.)
     SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer","NoWinKeys",if(lReSet,nNoWinKeys,1))
     SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\System","DisableTaskMgr",if(lReSet,nDisableTaskMgr,1))
+    if (!lReset)
+        if (IsRegistryKey(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"))
+            nTaskbarEndTask:=GetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask","N")
+            SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask",if(lReSet,nTaskbarEndTask,0))
+        else
+            if (CreateRegistryKey(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"))
+                SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask",if(lReSet,nTaskbarEndTask,0))
+            endif
+        endif
+    else
+        if (IsRegistryKey(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"))    
+            SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask",if(lReSet,nTaskbarEndTask,0))
+        endif
+    endif
 return(lReSet)
 
 static procedure __DisableKeys(cForm)
@@ -164,6 +181,7 @@ return
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
         local cCurDir:=(CurDrive()+":\"+CurDir())
         local cUser:=GetUserName()
+        local coathtoolPath:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
         if (hb_FileExists(cFileSecret))
             hb_DirCreate("C:\tmp\")
             cTmpSecretKeyFile:="C:\tmp\ttop.txt"
@@ -172,9 +190,10 @@ return
             endif
             cSecretKey:=hb_MemoRead(cFileSecret)
             c2FACode:=Left(Get2FACode(),6)
-            if (hb_FileExists("C:\tools\oathtool\oathtool.exe"))
-                DirChange("C:\tools\oathtool\")
-                cCmd:="oathtool --totp -b "+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
+            if (hb_FileExists(coathtoolPath+"\oathtool\oathtool.exe"))
+                DirChange(coathtoolPath)
+                cCmd:=".\oathtool\oathtool.exe --totp -b "+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
+                hb_memowrit("c:\tmp\cmd.bat",cCmd)
                 hb_Run(cCmd)
                 DirChange(cCurDir)
                 lRet:=hb_FileExists(cTmpSecretKeyFile)
@@ -183,7 +202,7 @@ return
                     hb_FileDelete(cTmpSecretKeyFile)
                     lRet:=(!Empty(cTmp2FACode))
                     if (!lRet)
-                        DirChange("C:\cygwin64\home\"+cUser)
+                        DirChange(coathtoolPath)
                         cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
                         hb_Run(cCmd)
                         DirChange(cCurDir)
@@ -196,7 +215,7 @@ return
                     endif
                 endif
             else
-                DirChange("C:\cygwin64\home\"+cUser)
+                DirChange(coathtoolPath)
                 cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
                 hb_Run(cCmd)
                 DirChange(cCurDir)
@@ -243,6 +262,7 @@ return
             COL 55 ;
             WIDTH 145 ;
             CAPTION "Code:"
+            VALID !Empty(Form_2FA.Text_1.Value)
          END LBLTEXTBOX
 
          DEFINE BUTTON Button_1
@@ -250,9 +270,11 @@ return
             COL nWidth  - GetBorderWidth() - iif(IsSeven(), 2, 0) - 125
             WIDTH 70
             CAPTION "&OK"
-            ACTION (c2FACode:=Form_2FA.Text_1.Value,ThisWindow.Release)
+            ACTION (IF(Empty(Form_2FA.Text_1.Value),Form_2FA.Text_1.SetFocus(),(c2FACode:=Form_2FA.Text_1.Value,ThisWindow.Release)))
          END BUTTON
 
+        ON LOSTFOCUS (IF(Empty(Form_2FA.Text_1.Value),Form_2FA.Text_1.SetFocus(),nil))
+        
         ON KEY ESCAPE ACTION Form_2FA.Text_1.SetFocus()
 
       END WINDOW
