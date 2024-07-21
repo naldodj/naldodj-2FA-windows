@@ -193,7 +193,6 @@ return
             if (hb_FileExists(coathtoolPath+"\oathtool\oathtool.exe"))
                 DirChange(coathtoolPath)
                 cCmd:=".\oathtool\oathtool.exe --totp -b "+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
-                hb_memowrit("c:\tmp\cmd.bat",cCmd)
                 hb_Run(cCmd)
                 DirChange(cCurDir)
                 lRet:=hb_FileExists(cTmpSecretKeyFile)
