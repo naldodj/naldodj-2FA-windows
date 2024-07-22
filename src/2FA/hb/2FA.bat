@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 rem Diretório base onde as aplicações estão localizadas
-set baseDir=.\
+set baseDir=.
 
 rem Verificar se um argumento foi passado
 if not "%~1"=="" (
