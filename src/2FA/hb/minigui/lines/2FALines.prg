@@ -37,8 +37,9 @@ Procedure Main( cParameters )
     // Capturar SIGINT (Ctrl+Break)
     Set(_SET_CANCEL,.F.)
 
+    SET MULTIPLE ON
     SET INTERACTIVECLOSE OFF
-
+    
 	PUBLIC cIniFile := GetWindowsFolder()+"\control.ini"
 
 	PRIVATE nWidth := GetDesktopWidth(), nHeight := GetDesktopHeight()
@@ -69,8 +70,9 @@ Procedure Main( cParameters )
             ON RELEASE (DeleteObject( hPen ), .T.) ;
 			ON PAINT (DoLines(nType)) ;
 			INTERVAL .02 ;
-			BACKCOLOR BLACK
-	ENDIF
+			BACKCOLOR BLACK            
+    
+    ENDIF
 
 	INSTALL SCREENSAVER FILENAME Lines.scr
 
