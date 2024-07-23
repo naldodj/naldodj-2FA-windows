@@ -16,42 +16,42 @@
 
 #xcommand END LBLTEXTBOX =>;
 
-Memvar nNoWinKeys,nDisableTaskMgr,nTaskbarEndTask
-
-static s_aDoMethod:=Array(0)
+static s_aRegKeys:=Array(0)
+static s_a__doMethod:=Array(0)
 
 init Procedure NoWinKeys(lReSet)
-    if (type("nNoWinKeys")!="N")
-        public nNoWinKeys:=GetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer","NoWinKeys","N")
-        hb_default(@nNoWinKeys,0)
+    if (aScan(s_aRegKeys,{|x|x[4]=="NoWinKeys"})==0)
+        aAdd(s_aRegKeys,{HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer","NoWinKeys","N",1,0})
     endif
-    if (type("nDisableTaskMgr")!="N")
-        public nDisableTaskMgr:=GetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\System","DisableTaskMgr","N")
-        hb_default(@nDisableTaskMgr,0)
+    if (aScan(s_aRegKeys,{|x|x[4]=="DisableTaskMgr"})==0)
+        aAdd(s_aRegKeys,{HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\System","DisableTaskMgr","N",1,0})
     endif
-    if (type("nTaskbarEndTask")!="N")
-        public nTaskbarEndTask:=1
+    if (aScan(s_aRegKeys,{|x|x[4]=="TaskbarEndTask"})==0)
+        aAdd(s_aRegKeys,{HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask","N",0,1})
     endif
     __NoWinKeys(.F.)
 return
 
 static function __NoWinKeys(lReSet)
+    local nReg,nRegs:=Len(s_aRegKeys),xValue
     hb_default(@lReSet,.F.)
-    SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer","NoWinKeys",if(lReSet,nNoWinKeys,1))
-    SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\System","DisableTaskMgr",if(lReSet,nDisableTaskMgr,1))
-    if (!lReset)
-        if (IsRegistryKey(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"))
-            nTaskbarEndTask:=GetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask","N")
-            SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask",if(lReSet,nTaskbarEndTask,0))
-        else
-            if (CreateRegistryKey(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"))
-                SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask",if(lReSet,nTaskbarEndTask,0))
+    for nReg:=1 to nRegs
+        xValue:=s_aRegKeys[nReg][5]
+        if (IsRegistryKey(s_aRegKeys[nReg][1],s_aRegKeys[nReg][2]))
+            if (!lReSet)
+                s_aRegKeys[nReg][6]:=GetRegistryValue(s_aRegKeys[nReg][1],s_aRegKeys[nReg][2],s_aRegKeys[nReg][3],s_aRegKeys[nReg][4])
+            else
+                xValue:=s_aRegKeys[nReg][6]
+            endif
+            SetRegistryValue(s_aRegKeys[nReg][1],s_aRegKeys[nReg][2],s_aRegKeys[nReg][3],xValue)
+        elseif (!lReSet)
+            if (CreateRegistryKey(s_aRegKeys[nReg][1],s_aRegKeys[nReg][2]))
+                SetRegistryValue(s_aRegKeys[nReg][1],s_aRegKeys[nReg][2],s_aRegKeys[nReg][3],xValue)
             endif
         endif
-    else
-        if (IsRegistryKey(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"))
-            SetRegistryValue(HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask",if(lReSet,nTaskbarEndTask,0))
-        endif
+    next nReg
+    if (lReSet)
+        UNINSTALL_READ_KEYBOARD()
     endif
 return(lReSet)
 
@@ -114,60 +114,60 @@ static procedure __DisableKeys(cForm)
     aAdd(aKeysDisable,VK_RCONTROL)
     aAdd(aKeysDisable,VK_RMENU)
     aAdd(aKeysDisable,VK_PROCESSKEY)
-    
+
     aAdd(aKeysDisable,91)//VK_LWIN
     aAdd(aKeysDisable,92)//VK_RWIN
     aAdd(aKeysDisable,93)//VK_APPS
 
     for k:=1 to Len(aKeysDisable)
         if (aKeysDisable[k]!=VK_RETURN)
-            _DefineHotKey(cForm,0,aKeysDisable[k],{||DoMethod(cForm,"SetFocus")})
-            if (aScan(s_aDoMethod,{|akey|aKey[1]==aKeysDisable[k]})==0)
-                aAdd(s_aDoMethod,{aKeysDisable[k],.F.})
+            _DefineHotKey(cForm,0,aKeysDisable[k],{||__doMethod(cForm,"Release")})
+            if (aScan(s_a__doMethod,{|akey|aKey[1]==aKeysDisable[k]})==0)
+                aAdd(s_a__doMethod,{aKeysDisable[k],.F.})
             endif
         endif
-        _DefineHotKey(cForm,MOD_ALT,aKeysDisable[k],{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_WIN,aKeysDisable[k],{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_SHIFT,aKeysDisable[k],{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_CONTROL,aKeysDisable[k],{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,aKeysDisable[k],{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,aKeysDisable[k],{||DoMethod(cForm,"SetFocus")})
+        _DefineHotKey(cForm,MOD_ALT,aKeysDisable[k],{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_WIN,aKeysDisable[k],{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_SHIFT,aKeysDisable[k],{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_CONTROL,aKeysDisable[k],{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,aKeysDisable[k],{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,aKeysDisable[k],{||__doMethod(cForm,"Release")})
     next k
 
     //VK_0...VK_9
     for k:=48 to 57
-        _DefineHotKey(cForm,MOD_ALT,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_WIN,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_CONTROL,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
+        _DefineHotKey(cForm,MOD_ALT,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_WIN,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_SHIFT,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_CONTROL,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||__doMethod(cForm,"Release")})
     next k
 
     //VK_A...VK_Z
     for k:=65 to 90
         if (k!=65/*A*/).and.(k!=79/*O*/)
-            _DefineHotKey(cForm,MOD_ALT,k,{||DoMethod(cForm,"SetFocus")})
+            _DefineHotKey(cForm,MOD_ALT,k,{||__doMethod(cForm,"Release")})
         endif
-        _DefineHotKey(cForm,MOD_WIN,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_CONTROL,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
+        _DefineHotKey(cForm,MOD_WIN,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_SHIFT,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_CONTROL,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||__doMethod(cForm,"Release")})
     next k
 
     //VK_F1...VK_F24
     for k:=112 to 135
-        _DefineHotKey(cForm,MOD_ALT,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_WIN,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_CONTROL,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,k,{||DoMethod(cForm,"SetFocus")})
-        _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||DoMethod(cForm,"SetFocus")})
+        _DefineHotKey(cForm,MOD_ALT,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_WIN,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_SHIFT,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_CONTROL,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_ALT+MOD_CONTROL,k,{||__doMethod(cForm,"Release")})
+        _DefineHotKey(cForm,MOD_CONTROL+MOD_SHIFT,k,{||__doMethod(cForm,"Release")})
     next k
 
-    _DefineHotKey(cForm,hb_bitOr(MOD_NOREPEAT,MOD_WIN),VK_LWIN,{||DoMethod(cForm,"SetFocus")})
-    _DefineHotKey(cForm,hb_bitOr(MOD_NOREPEAT,MOD_WIN),VK_RWIN,{||DoMethod(cForm,"SetFocus")})
+    _DefineHotKey(cForm,hb_bitOr(MOD_NOREPEAT,MOD_WIN),VK_LWIN,{||__doMethod(cForm,"Release")})
+    _DefineHotKey(cForm,hb_bitOr(MOD_NOREPEAT,MOD_WIN),VK_RWIN,{||__doMethod(cForm,"Release")})
 
     if (INSTALL_READ_KEYBOARD())
         DEFINE TIMER timer_k OF &cForm INTERVAL .01 ACTION __chkKeysPressed(cForm)
@@ -184,11 +184,10 @@ return
             public lValid2FAExec:=.T.
             lRet:=__Valid2FACode()
             if (!lRet)
-                __NoWinKeys(.T.)
-                UNINSTALL_READ_KEYBOARD()
+                __NoWinKeys(.T.)                
                 ShellExecute(nil,"open",ExeName(),"/s",nil,SW_SHOWMINIMIZED)
             else
-                __NoWinKeys(.T.)
+                __NoWinKeys(.T.)                
             endif
         endif
     return(lRet)
@@ -214,10 +213,10 @@ return
                 cTmpSecretKeyFile+=".txt"
             else
                 cTmpSecretKeyFile+="tmpotp.txt"
-            endif            
+            endif
             if (hb_FileExists(cTmpSecretKeyFile))
                 hb_FileDelete(cTmpSecretKeyFile)
-            endif            
+            endif
             lRet:=Get2FACodeByHBOtp(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir)
             if (!lRet)
                 lRet:=Get2FACodeByOathtool(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,coathtoolPath)
@@ -384,7 +383,7 @@ return
          INPUTMASK "999999"
          //ONGOTFOCUS SetProperty( ThisWindow.Name, textboxname, "FontColor", BLACK )
          //ONLOSTFOCUS SetProperty( ThisWindow.Name, textboxname, "FontColor", GRAY )
-      END TEXTBOX      
+      END TEXTBOX
 
     return(nil)
 
@@ -396,32 +395,28 @@ static procedure __chkKeysPressed(cForm)
 
     static s_nLastKeyPress:=-999
     static s_cLastKeyPress:=""
-    
-    local aDoMethod:=Array(0)
-    
+
+    local a__doMethod:=Array(0)
+
     local nAT
-    
-    aAdd(aDoMethod,VK_LWIN)
-    aAdd(aDoMethod,VK_RWIN)
-    aAdd(aDoMethod,VK_APPS)
-    
-    aAdd(aDoMethod,91)//VK_LWIN
-    aAdd(aDoMethod,92)//VK_RWIN
-    aAdd(aDoMethod,93)//VK_APPS
+
+    aAdd(a__doMethod,VK_LWIN)
+    aAdd(a__doMethod,VK_RWIN)
+    aAdd(a__doMethod,VK_APPS)
+
+    aAdd(a__doMethod,91)//VK_LWIN
+    aAdd(a__doMethod,92)//VK_RWIN
+    aAdd(a__doMethod,93)//VK_APPS
 
     if (s_nLastKeyPress!=GET_LAST_VK())
         s_nLastKeyPress:=GET_LAST_VK()
         s_cLastKeyPress:=GET_LAST_VK_NAME()
-        Keybd_Event(s_nLastKeyPress,.T.)
-        if ((nAT:=aScan(s_aDoMethod,{|aKey|aKey[1]==s_nLastKeyPress}))>0)
-            if (s_aDoMethod[nAT][2])
-                DoMethod(cForm,"SetFocus")
-                if (!IsInCallStack("_RELEASEWINDOW"))
-                    DoMethod(cForm,"Release")
-                endif
-                s_aDoMethod[nAT][2]:=.F.
+        if ((nAT:=aScan(s_a__doMethod,{|aKey|aKey[1]==s_nLastKeyPress}))>0)
+            if (s_a__doMethod[nAT][2])
+                __doMethod(cForm,"Release")
+                s_a__doMethod[nAT][2]:=.F.
             else
-                s_aDoMethod[nAT][2]:=.T.
+                s_a__doMethod[nAT][2]:=.T.
             endif
         endif
     endif
@@ -453,6 +448,18 @@ static function IsInCallStack(cIsInCallStack as character,cStackExit as characte
 
 return( IsInCallStack )
 
+static procedure __doMethod(cForm,cMethod)
+    if (Upper(cMethod)=="RELEASE")
+        if (!IsInCallStack("_RELEASEWINDOW"))
+            doMethod(cForm,cMethod)
+        else
+            doMethod(cForm,"SetFocus")
+        endif
+    else
+        doMethod(cForm,cMethod)
+    endif
+return
+
 #pragma begindump
 
     #include <windows.h>
@@ -468,11 +475,11 @@ return( IsInCallStack )
     {
         DWORD vkCode;
 
-        if (nCode < 0) 
+        if (nCode < 0)
             return CallNextHookEx(hhk, nCode, wParam, lParam);
-            
+
         if (PAUSE_hhk == FALSE)
-        {   
+        {
             VK_PRESSED = (long) wParam;
             VK_lParam = (LONG) lParam;
 
@@ -482,36 +489,36 @@ return( IsInCallStack )
             if (vkCode == VK_LWIN || vkCode == VK_RWIN)
                 return 1; // Stop propagation
         }
-        else    
-        {   
+        else
+        {
             VK_PRESSED = 0;
             VK_lParam = 0;
-        }   
-        
+        }
+
         return CallNextHookEx(hhk, nCode, wParam, lParam);
     }
 
     HB_FUNC(GET_STATE_VK_SHIFT)
     {
        if (GetKeyState(VK_SHIFT) & 0x8000)
-           hb_retl(TRUE); 
-       else    
+           hb_retl(TRUE);
+       else
            hb_retl(FALSE);
     }
 
     HB_FUNC(GET_STATE_VK_CONTROL)
     {
        if (GetKeyState(VK_CONTROL) & 0x8000)
-           hb_retl(TRUE); 
-       else    
+           hb_retl(TRUE);
+       else
            hb_retl(FALSE);
     }
 
     HB_FUNC(GET_STATE_VK_ALT)
     {
        if (GetKeyState(VK_MENU) & 0x8000)
-           hb_retl(TRUE); 
-       else    
+           hb_retl(TRUE);
+       else
            hb_retl(FALSE);
     }
 
@@ -520,7 +527,7 @@ return( IsInCallStack )
        if (flag_hhk == TRUE)
            hb_retnl(VK_PRESSED);
        else
-          hb_retnl(0);    
+          hb_retnl(0);
     }
 
     HB_FUNC(GET_LAST_VK_NAME)
@@ -528,23 +535,23 @@ return( IsInCallStack )
        CHAR string[128];
 
        if (flag_hhk == TRUE)
-       {  
+       {
           GetKeyNameText(VK_lParam, (LPTSTR) &string, 128);
           hb_retc(string);
        }
        else
-          hb_retc("");    
+          hb_retc("");
     }
 
     HB_FUNC(PAUSE_READ_VK)
     {
-       if (hb_pcount() == 1 && hb_parinfo(1) == HB_IT_LOGICAL)   
-       {   
-           if (hb_parl(1) == TRUE) 
-           {   
+       if (hb_pcount() == 1 && hb_parinfo(1) == HB_IT_LOGICAL)
+       {
+           if (hb_parl(1) == TRUE)
+           {
                VK_PRESSED = 0;
                VK_lParam = 0;
-           }     
+           }
            PAUSE_hhk = hb_parl(1);
        }
     }
@@ -552,35 +559,35 @@ return( IsInCallStack )
     HB_FUNC(INSTALL_READ_KEYBOARD)
     {
        if (flag_hhk == FALSE)
-       {    
+       {
            hhk = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, (HINSTANCE) NULL, 0); // Use WH_KEYBOARD_LL for low-level hook
-            
-            if (hhk == NULL) 
+
+            if (hhk == NULL)
                 hb_retl(FALSE);
             else
-            {   
-                flag_hhk = TRUE;    
-                hb_retl(TRUE);                       
-            }   
+            {
+                flag_hhk = TRUE;
+                hb_retl(TRUE);
+            }
        }
        else
-          hb_retl(TRUE);      
+          hb_retl(TRUE);
     }
 
     HB_FUNC(UNINSTALL_READ_KEYBOARD)
     {
        if (flag_hhk == TRUE)
-       {   
+       {
            if (UnhookWindowsHookEx(hhk) == TRUE)
-           {   
+           {
                flag_hhk = FALSE;
-               hb_retl(TRUE);           
+               hb_retl(TRUE);
            }
            else
-               hb_retl(FALSE);   
+               hb_retl(FALSE);
        }
        else
-          hb_retl(TRUE);      
+          hb_retl(TRUE);
     }
 
 #pragma enddump
