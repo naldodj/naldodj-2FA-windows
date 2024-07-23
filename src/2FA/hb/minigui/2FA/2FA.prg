@@ -1,5 +1,6 @@
 #include "inkey.ch"
 #include "setcurs.ch"
+#include "hbcompat.ch"
 #include "i_keybd_ext.ch"
 
 #ifdef __XHARBOUR__
@@ -193,17 +194,36 @@ return
     return(lRet)
 
     static function __Valid2FACode()
+        local cIni:="2FA.ini"
+        local hIni:=hb_iniRead(cIni)
         local cUser:=GetUserName()
         local cCurDir:=(CurDrive()+":\"+CurDir())
         local cTmpPath:=hb_dirTmp()
-        local chbotpPath:="C:\2FA"
         local cSecretKey,c2FACode,cTmp2FACode,cTmpSecretKeyFile
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
-        local coathtoolPath:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
         local lRet:=.T.
         if (hb_FileExists(cFileSecret))
+            if (.NOT.(hb_FileExists(cIni)).or.Empty(hIni))
+                hIni:=hb_Hash()
+                hIni["GENERAL"]:=hb_Hash()
+                hIni["GENERAL"]["FILESECRET"]:=cFileSecret
+                hIni["GENERAL"]["TMPPATH"]:=cTmpPath
+                hIni["GENERAL"]["HBOTPPATH"]:="C:\2FA"
+                hIni["GENERAL"]["HBOTP_GCRYPT"]:="hbotp_gcrypt.exe"
+                hIni["GENERAL"]["HBOTP_OPENSSL"]:="hbotp_openssl.exe"
+                hIni["GENERAL"]["CYGWIN_PATH"]:="C:\cygwin64\"
+                hIni["GENERAL"]["OATH_TOOLKIT_PATH"]:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
+                hb_iniWrite(cIni,hIni,"#@2FA.ini","#end of file",.F.)
+                hIni:=hb_iniRead(cIni)
+            endif
+            if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"TMPPATH"))
+                cTmpPath:=hIni["GENERAL"]["TMPPATH"]
+            endif
             if (Right(cTmpPath,1)!="\")
                 cTmpPath+="\"
+            endif
+            if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"FILESECRET"))
+                cFileSecret:=hIni["GENERAL"]["FILESECRET"]
             endif
             cSecretKey:=hb_MemoRead(cFileSecret)
             c2FACode:=Left(Get2FACode(),6)
@@ -217,53 +237,91 @@ return
             if (hb_FileExists(cTmpSecretKeyFile))
                 hb_FileDelete(cTmpSecretKeyFile)
             endif
-            lRet:=Get2FACodeByHBOtp(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir)
+            lRet:=Get2FACodeByHBOtp(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
             if (!lRet)
-                lRet:=Get2FACodeByOathtool(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,coathtoolPath)
+                lRet:=Get2FACodeByOathtool(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
             endif
             if (lRet)
                 lRet:=(cTmp2FACode==c2FACode)
                 if (!lRet)
-                    MsgInfo("Codigo Invalido: "+c2FACode,"2FA Key Code")
+                    MsgInfo("Invalid OTP Key: "+c2FACode,"2FA Key Code")
                 endif
             endif
         endif
     return(lRet)
 
-    static function Get2FACodeByHBOtp(cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir)
+    static function Get2FACodeByHBOtp(cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
         local cCmd
-        local chbotpPath:="C:\2FA"
+        local chbotpPath
+        local chbotp_gcrypt
+        local chbotp_openssl
         local lRet
-        lRet:=(hb_FileExists(chbotpPath+"\hbotp_gcrypt.exe").or.hb_FileExists(chbotpPath+"\hbotp_openssl.exe"))
-        if (lRet)
-            DirChange(chbotpPath)
-            cCmd:=".\hbotp_openssl.exe -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
+        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTPPATH"))
+            chbotpPath:=hIni["GENERAL"]["HBOTPPATH"]
+        endif        
+        hb_Default(@chbotpPath,"")
+        if (Right(chbotpPath,1)!="\")
+            chbotpPath+="\"
+        endif        
+        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTP_GCRYPT"))
+            chbotp_gcrypt:=hIni["GENERAL"]["HBOTP_GCRYPT"]
+        endif
+        hb_Default(@chbotp_gcrypt,"")
+        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTP_OPENSSL"))
+            chbotp_openssl:=hIni["GENERAL"]["HBOTP_OPENSSL"]
+        endif
+        hb_Default(@chbotp_openssl,"")
+        DirChange(chbotpPath)
+        lRet:=(hb_FileExists(chbotpPath+chbotp_gcrypt).or.hb_FileExists(chbotpPath+chbotp_openssl))
+        if (lRet).and.(hb_FileExists(chbotpPath+chbotp_openssl))
+            cCmd:=".\"+chbotp_openssl+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
             hb_Run(cCmd)
             lRet:=hb_FileExists(cTmpSecretKeyFile)
-            if (!lRet)
-                cCmd:=".\hbotp_gcrypt.exe -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
-                hb_Run(cCmd)
-                lRet:=hb_FileExists(cTmpSecretKeyFile)
-            endif
-            if (lRet)
-                cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
-                lRet:=!Empty(cTmp2FACode)
-                hb_FileDelete(cTmpSecretKeyFile)
-            endif
-            DirChange(cCurDir)
         endif
+        if ((!lRet).and.(hb_FileExists(chbotpPath+chbotp_gcrypt)))
+            cCmd:=".\"+chbotp_gcrypt+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
+            hb_Run(cCmd)
+            lRet:=hb_FileExists(cTmpSecretKeyFile)
+        endif
+        if (lRet)
+            cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+            lRet:=!Empty(cTmp2FACode)
+            hb_FileDelete(cTmpSecretKeyFile)
+        endif
+        DirChange(cCurDir)
     return(lRet)
 
-    static function Get2FACodeByOathtool(cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,coathtoolPath)
+    static function Get2FACodeByOathtool(cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
 
         local cCmd
+        
+        local cCygwinPath
+        local cOathtoolPath
+        local cCygWinTmpSecretKeyFile
+        
         local lRet:=.F.
+
+        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"CYGWIN_PATH"))
+            cCygwinPath:=hIni["GENERAL"]["CYGWIN_PATH"]
+        endif
+        hb_default(@cCygwinPath,"")
+        if (Right(cCygwinPath,1)!="\")
+            cCygwinPath+="\"
+        endif
+        
+        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"OATH_TOOLKIT_PATH"))
+            cOathtoolPath:=hIni["GENERAL"]["OATH_TOOLKIT_PATH"]
+        endif
+        hb_default(@cOathtoolPath,"")
+        if (Right(cOathtoolPath,1)!="\")
+            cOathtoolPath+="\"
+        endif
 
         begin sequence
 
-            if (hb_FileExists(coathtoolPath+"\oathtool\oathtool.exe"))
+            if (hb_FileExists(cOathtoolPath+"oathtool\oathtool.exe"))
 
-                DirChange(coathtoolPath)
+                DirChange(cOathtoolPath)
 
                 cCmd:=".\oathtool\oathtool.exe --totp -b "+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
                 hb_Run(cCmd)
@@ -283,9 +341,18 @@ return
 
             endif
 
-            DirChange(coathtoolPath)
+            DirChange(cOathtoolPath)
 
-            cCmd:='C:\cygwin64\bin\bash.exe -c "~/oath-toolkit-2.6.9/oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/c/tmp/ttop.txt 2>&1"'
+            cCygWinOathtoolPath:=strTran(cTmpSecretKeyFile,":","")
+            cCygWinOathtoolPath:=strTran(cTmpSecretKeyFile,"\","/")
+            if (Right(cCygWinOathtoolPath,1)!="/")
+                cCygWinOathtoolPath+="/"
+            endif
+
+            cCygWinTmpSecretKeyFile:=strTran(cTmpSecretKeyFile,":","")
+            cCygWinTmpSecretKeyFile:=strTran(cTmpSecretKeyFile,"\","/")
+
+            cCmd:=cCygwinPath+'bin\bash.exe -c "'+cCygWinOathtoolPath+'oathtool/oathtool --totp -b '+cSecretKey+' 1> /cygdrive/'+cCygWinTmpSecretKeyFile+' 2>&1"'
             hb_Run(cCmd)
 
             DirChange(cCurDir)
@@ -302,7 +369,7 @@ return
 
         end sequence
 
-    return(cTmp2FACode)
+    return(lRet)
 
     static function Get2FACode()
 
