@@ -6,6 +6,7 @@
     #include "hbcompat.ch"
     #xtranslate hb_Run( [<x,...>] ) => __Run( <x> )
     #xtranslate hb_DirCreate( [<x,...>] ) => MakeDir( <x> )
+    #xtranslate hb_dirTmp() => GetTempFolder()
 #endif
 
 #define MOD_NOREPEAT 0x4000
@@ -193,20 +194,30 @@ return
     return(lRet)
 
     static function __Valid2FACode()
-        local cSecretKey,c2FACode,cTmp2FACode,cTmpSecretKeyFile,lRet:=.T.
-        local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
-        local cCurDir:=(CurDrive()+":\"+CurDir())
         local cUser:=GetUserName()
+        local cCurDir:=(CurDrive()+":\"+CurDir())
+        local cTmpPath:=hb_dirTmp()
         local chbotpPath:="C:\2FA"
+        local cSecretKey,c2FACode,cTmp2FACode,cTmpSecretKeyFile
+        local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
         local coathtoolPath:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
+        local lRet:=.T.
         if (hb_FileExists(cFileSecret))
-            hb_DirCreate("C:\tmp\")
-            cTmpSecretKeyFile:="C:\tmp\ttop.txt"
-            if (hb_FileExists(cTmpSecretKeyFile))
-                hb_FileDelete(cTmpSecretKeyFile)
+            if (Right(cTmpPath,1)!="\")
+                cTmpPath+="\"
             endif
             cSecretKey:=hb_MemoRead(cFileSecret)
             c2FACode:=Left(Get2FACode(),6)
+            cTmpSecretKeyFile:=cTmpPath
+            if (empty(c2FACode))
+                cTmpSecretKeyFile+=c2FACode
+                cTmpSecretKeyFile+=".txt"
+            else
+                cTmpSecretKeyFile+="tmpotp.txt"
+            endif            
+            if (hb_FileExists(cTmpSecretKeyFile))
+                hb_FileDelete(cTmpSecretKeyFile)
+            endif            
             lRet:=Get2FACodeByHBOtp(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir)
             if (!lRet)
                 lRet:=Get2FACodeByOathtool(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,coathtoolPath)
