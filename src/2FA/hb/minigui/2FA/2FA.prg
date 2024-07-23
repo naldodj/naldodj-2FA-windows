@@ -252,34 +252,34 @@ return
 
     static function Get2FACodeByHBOtp(cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
         local cCmd
-        local chbotpPath
-        local chbotp_gcrypt
-        local chbotp_openssl
+        local cHBOtpPath
+        local cHBOtp_GCrypt
+        local cHBOtp_OpenSSL
         local lRet
         if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTPPATH"))
-            chbotpPath:=hIni["GENERAL"]["HBOTPPATH"]
+            cHBOtpPath:=hIni["GENERAL"]["HBOTPPATH"]
         endif        
-        hb_Default(@chbotpPath,"")
-        if (Right(chbotpPath,1)!="\")
-            chbotpPath+="\"
+        hb_Default(@cHBOtpPath,"")
+        if (Right(cHBOtpPath,1)!="\")
+            cHBOtpPath+="\"
         endif        
         if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTP_GCRYPT"))
-            chbotp_gcrypt:=hIni["GENERAL"]["HBOTP_GCRYPT"]
+            cHBOtp_GCrypt:=hIni["GENERAL"]["HBOTP_GCRYPT"]
         endif
-        hb_Default(@chbotp_gcrypt,"")
+        hb_Default(@cHBOtp_GCrypt,"")
         if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTP_OPENSSL"))
-            chbotp_openssl:=hIni["GENERAL"]["HBOTP_OPENSSL"]
+            cHBOtp_OpenSSL:=hIni["GENERAL"]["HBOTP_OPENSSL"]
         endif
-        hb_Default(@chbotp_openssl,"")
-        DirChange(chbotpPath)
-        lRet:=(hb_FileExists(chbotpPath+chbotp_gcrypt).or.hb_FileExists(chbotpPath+chbotp_openssl))
-        if (lRet).and.(hb_FileExists(chbotpPath+chbotp_openssl))
-            cCmd:=".\"+chbotp_openssl+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
+        hb_Default(@cHBOtp_OpenSSL,"")
+        DirChange(cHBOtpPath)
+        lRet:=(hb_FileExists(cHBOtpPath+cHBOtp_GCrypt).or.hb_FileExists(cHBOtpPath+cHBOtp_OpenSSL))
+        if (lRet).and.(hb_FileExists(cHBOtpPath+cHBOtp_OpenSSL))
+            cCmd:=".\"+cHBOtp_OpenSSL+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
             hb_Run(cCmd)
             lRet:=hb_FileExists(cTmpSecretKeyFile)
         endif
-        if ((!lRet).and.(hb_FileExists(chbotpPath+chbotp_gcrypt)))
-            cCmd:=".\"+chbotp_gcrypt+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
+        if ((!lRet).and.(hb_FileExists(cHBOtpPath+cHBOtp_GCrypt)))
+            cCmd:=".\"+cHBOtp_GCrypt+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
             hb_Run(cCmd)
             lRet:=hb_FileExists(cTmpSecretKeyFile)
         endif
