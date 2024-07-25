@@ -194,15 +194,20 @@ return
     return(lRet)
 
     static function __Valid2FACode()
+        
         local cIni:="2FA.ini"
         local hIni:=hb_iniRead(cIni)
+
         local cUser:=GetUserName()
         local cCurDir:=(CurDrive()+":\"+CurDir())
         local cTmpPath:=hb_dirTmp()
-        local cSecretKey,c2FACode,cTmp2FACode,cTmpSecretKeyFile
+        local cSecretKey,c2FACode,cTmpSecretKeyFile
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
+
         local lRet:=.T.
-        if (hb_FileExists(cFileSecret))
+        
+        begin sequence
+            
             if (.NOT.(hb_FileExists(cIni)).or.Empty(hIni))
                 hIni:=hb_Hash()
                 hIni["GENERAL"]:=hb_Hash()
@@ -216,15 +221,22 @@ return
                 hb_iniWrite(cIni,hIni,"#@2FA.ini","#end of file",.F.)
                 hIni:=hb_iniRead(cIni)
             endif
+            
+            if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"FILESECRET"))
+                cFileSecret:=hIni["GENERAL"]["FILESECRET"]
+            endif
+            
+            if (!hb_FileExists(cFileSecret))
+                break
+            endif
+
             if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"TMPPATH"))
                 cTmpPath:=hIni["GENERAL"]["TMPPATH"]
             endif
             if (Right(cTmpPath,1)!="\")
                 cTmpPath+="\"
             endif
-            if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"FILESECRET"))
-                cFileSecret:=hIni["GENERAL"]["FILESECRET"]
-            endif
+            
             cSecretKey:=hb_MemoRead(cFileSecret)
             c2FACode:=Left(Get2FACode(),6)
             cTmpSecretKeyFile:=cTmpPath
@@ -237,29 +249,38 @@ return
             if (hb_FileExists(cTmpSecretKeyFile))
                 hb_FileDelete(cTmpSecretKeyFile)
             endif
-            lRet:=Get2FACodeByHBOtp(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
-            if (!lRet)
-                lRet:=Get2FACodeByOathtool(@cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
-            endif
+            
+            lRet:=Get2FACodeByHBOtp(@c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
             if (lRet)
-                lRet:=(cTmp2FACode==c2FACode)
-                if (!lRet)
-                    MsgInfo("Invalid OTP Key: "+c2FACode,"2FA Key Code")
-                endif
+                break
             endif
-        endif
+            
+            lRet:=Get2FACodeByOathtool(@c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
+            
+            if (lRet)
+                break
+            endif
+
+            MsgInfo("Invalid OTP Key: "+c2FACode,"2FA Key Code")
+
+        end sequence
+    
     return(lRet)
 
-    static function Get2FACodeByHBOtp(cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
+    static function Get2FACodeByHBOtp(c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
+        
         local cCmd
-        local cHBOtpPath
+        local cTmp2FACode
+        local cHBOtpPath        
         local cHBOtp_GCrypt
         local cHBOtp_OpenSSL
         local lRet
+        
         if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTPPATH"))
             cHBOtpPath:=hIni["GENERAL"]["HBOTPPATH"]
         endif        
         hb_Default(@cHBOtpPath,"")
+        
         if (Right(cHBOtpPath,1)!="\")
             cHBOtpPath+="\"
         endif        
@@ -267,34 +288,66 @@ return
             cHBOtp_GCrypt:=hIni["GENERAL"]["HBOTP_GCRYPT"]
         endif
         hb_Default(@cHBOtp_GCrypt,"")
+        
         if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTP_OPENSSL"))
             cHBOtp_OpenSSL:=hIni["GENERAL"]["HBOTP_OPENSSL"]
         endif
         hb_Default(@cHBOtp_OpenSSL,"")
+        
         DirChange(cHBOtpPath)
-        lRet:=(hb_FileExists(cHBOtpPath+cHBOtp_GCrypt).or.hb_FileExists(cHBOtpPath+cHBOtp_OpenSSL))
-        if (lRet).and.(hb_FileExists(cHBOtpPath+cHBOtp_OpenSSL))
+        
+        begin sequence
+            
+            lRet:=(hb_FileExists(cHBOtpPath+cHBOtp_GCrypt).or.hb_FileExists(cHBOtpPath+cHBOtp_OpenSSL))
+
+            if (!lRet)
+                break
+            endif
+            
+            if (!hb_FileExists(cHBOtpPath+cHBOtp_OpenSSL))
+                break
+            endif
+            
             cCmd:=".\"+cHBOtp_OpenSSL+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
             hb_Run(cCmd)
             lRet:=hb_FileExists(cTmpSecretKeyFile)
-        endif
-        if ((!lRet).and.(hb_FileExists(cHBOtpPath+cHBOtp_GCrypt)))
+            
+            if (lRet)
+                cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
+                hb_FileDelete(cTmpSecretKeyFile)
+                lRet:=(cTmp2FACode==c2FACode)
+                if (lRet)
+                    break
+                endif
+            endif
+
+            if (!hb_FileExists(cHBOtpPath+cHBOtp_GCrypt))
+                break
+            endif
+            
             cCmd:=".\"+cHBOtp_GCrypt+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
             hb_Run(cCmd)
             lRet:=hb_FileExists(cTmpSecretKeyFile)
-        endif
-        if (lRet)
+            
+            if (!lRet)
+                break
+            endif
+
             cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
-            lRet:=!Empty(cTmp2FACode)
             hb_FileDelete(cTmpSecretKeyFile)
-        endif
+            lRet:=(cTmp2FACode==c2FACode)
+
+        end sequence
+
         DirChange(cCurDir)
+
     return(lRet)
 
-    static function Get2FACodeByOathtool(cTmp2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
+    static function Get2FACodeByOathtool(c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
 
         local cCmd
         
+        local cTmp2FACode
         local cCygwinPath
         local cOathtoolPath
         local cCygWinTmpSecretKeyFile
@@ -333,7 +386,7 @@ return
                 if (lRet)
                     cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
                     hb_FileDelete(cTmpSecretKeyFile)
-                    lRet:=(!Empty(cTmp2FACode))
+                    lRet:=(cTmp2FACode==c2FACode)
                     if (lRet)
                         break
                     endif
@@ -365,7 +418,7 @@ return
 
             cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
             hb_FileDelete(cTmpSecretKeyFile)
-            lRet:=!Empty(cTmp2FACode)
+            lRet:=(cTmp2FACode==c2FACode)
 
         end sequence
 
