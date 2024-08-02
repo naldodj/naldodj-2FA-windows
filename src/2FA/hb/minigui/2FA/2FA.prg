@@ -17,18 +17,66 @@
 
 #xcommand END LBLTEXTBOX =>;
 
+static c_h2FAINI:="2FA.ini"
+static s_h2FAIni
 static s_aRegKeys:=Array(0)
 static s_a__doMethod:=Array(0)
 
 init Procedure NoWinKeys(lReSet)
-    if (aScan(s_aRegKeys,{|x|x[4]=="NoWinKeys"})==0)
-        aAdd(s_aRegKeys,{HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer","NoWinKeys","N",1,0})
+    local cRegistryKey
+    local cRegistryPath
+    local cRegistryType
+    if (hb_FileExists(c_h2FAINI))
+        s_h2FAIni:=hb_iniRead(c_h2FAINI)
     endif
-    if (aScan(s_aRegKeys,{|x|x[4]=="DisableTaskMgr"})==0)
-        aAdd(s_aRegKeys,{HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Policies\System","DisableTaskMgr","N",1,0})
+    if (.NOT.(hb_FileExists(c_h2FAINI)).or.Empty(c_h2FAINI))
+        s_h2FAIni:=hb_Hash()
+        s_h2FAIni["GENERAL"]:=hb_Hash()
+        s_h2FAIni["GENERAL"]["FILESECRET"]:=cFileSecret
+        s_h2FAIni["GENERAL"]["TMPPATH"]:=cTmpPath
+        s_h2FAIni["GENERAL"]["HBOTPPATH"]:="C:\2FA"
+        s_h2FAIni["GENERAL"]["HBOTP_GCRYPT"]:="hbotp_gcrypt.exe"
+        s_h2FAIni["GENERAL"]["HBOTP_OPENSSL"]:="hbotp_openssl.exe"
+        s_h2FAIni["GENERAL"]["CYGWIN_PATH"]:="C:\cygwin64\"
+        s_h2FAIni["GENERAL"]["OATH_TOOLKIT_PATH"]:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
+        s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"]:=hb_Hash()
+        s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"]["NoWinKeys"]:=0
+        s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\System"]:=hb_Hash()
+        s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\System"]["DisableTaskMgr"]:=0
+        s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"]:=hb_Hash()
+        s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"]["TaskbarEndTask"]:=1
+        hb_iniWrite(c_h2FAINI,s_h2FAIni,"#@2FA.ini","#end of file",.F.)
+        s_h2FAIni:=hb_iniRead(c_h2FAINI)
     endif
-    if (aScan(s_aRegKeys,{|x|x[4]=="TaskbarEndTask"})==0)
-        aAdd(s_aRegKeys,{HKEY_CURRENT_USER,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings","TaskbarEndTask","N",0,1})
+    cRegistryKey:="NoWinKeys"
+    if (aScan(s_aRegKeys,{|x|x[4]==cRegistryKey})==0)
+        cRegistryPath:="Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+        cRegistryType:="N"
+        if (HB_HHASKEY(s_h2FAIni,cRegistryPath).and.HB_HHASKEY(s_h2FAIni[cRegistryPath],cRegistryKey))
+            aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,val(s_h2FAIni[cRegistryPath][cRegistryKey])})
+        else
+            aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,0})
+        endif
+    endif
+    cRegistryKey:="DisableTaskMgr"
+    if (aScan(s_aRegKeys,{|x|x[4]==cRegistryKey})==0)
+        cRegistryPath:="Software\Microsoft\Windows\CurrentVersion\Policies\System"
+        cRegistryType:="N"
+        if (HB_HHASKEY(s_h2FAIni,cRegistryPath).and.HB_HHASKEY(s_h2FAIni[cRegistryPath],cRegistryKey))
+            aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,val(s_h2FAIni[cRegistryPath][cRegistryKey])})
+        else
+            aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,0})
+        endif
+    endif
+    cRegistryKey:="TaskbarEndTask"
+    if (aScan(s_aRegKeys,{|x|x[4]==cRegistryKey})==0)
+        cRegistryPath:="Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
+        cRegistryType:="N"
+        if (HB_HHASKEY(s_h2FAIni,cRegistryPath).and.HB_HHASKEY(s_h2FAIni[cRegistryPath],cRegistryKey))
+            aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,val(s_h2FAIni[cRegistryPath][cRegistryKey])})
+        else
+            aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,0,1})
+        endif
     endif
     __NoWinKeys(.F.)
 return
@@ -185,18 +233,15 @@ return
             public lValid2FAExec:=.T.
             lRet:=__Valid2FACode()
             if (!lRet)
-                __NoWinKeys(.T.)                
+                __NoWinKeys(.T.)
                 ShellExecute(nil,"open",ExeName(),"/s",nil,SW_SHOWMINIMIZED)
             else
-                __NoWinKeys(.T.)                
+                __NoWinKeys(.T.)
             endif
         endif
     return(lRet)
 
     static function __Valid2FACode()
-        
-        local cIni:="2FA.ini"
-        local hIni:=hb_iniRead(cIni)
 
         local cUser:=GetUserName()
         local cCurDir:=(CurDrive()+":\"+CurDir())
@@ -205,38 +250,24 @@ return
         local cFileSecret:="C:\2FA\"+GetComputerName()+".txt"
 
         local lRet:=.T.
-        
+
         begin sequence
-            
-            if (.NOT.(hb_FileExists(cIni)).or.Empty(hIni))
-                hIni:=hb_Hash()
-                hIni["GENERAL"]:=hb_Hash()
-                hIni["GENERAL"]["FILESECRET"]:=cFileSecret
-                hIni["GENERAL"]["TMPPATH"]:=cTmpPath
-                hIni["GENERAL"]["HBOTPPATH"]:="C:\2FA"
-                hIni["GENERAL"]["HBOTP_GCRYPT"]:="hbotp_gcrypt.exe"
-                hIni["GENERAL"]["HBOTP_OPENSSL"]:="hbotp_openssl.exe"
-                hIni["GENERAL"]["CYGWIN_PATH"]:="C:\cygwin64\"
-                hIni["GENERAL"]["OATH_TOOLKIT_PATH"]:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
-                hb_iniWrite(cIni,hIni,"#@2FA.ini","#end of file",.F.)
-                hIni:=hb_iniRead(cIni)
+
+            if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"FILESECRET"))
+                cFileSecret:=s_h2FAIni["GENERAL"]["FILESECRET"]
             endif
-            
-            if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"FILESECRET"))
-                cFileSecret:=hIni["GENERAL"]["FILESECRET"]
-            endif
-            
+
             if (!hb_FileExists(cFileSecret))
                 break
             endif
 
-            if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"TMPPATH"))
-                cTmpPath:=hIni["GENERAL"]["TMPPATH"]
+            if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"TMPPATH"))
+                cTmpPath:=s_h2FAIni["GENERAL"]["TMPPATH"]
             endif
             if (Right(cTmpPath,1)!="\")
                 cTmpPath+="\"
             endif
-            
+
             cSecretKey:=hb_MemoRead(cFileSecret)
             c2FACode:=Left(Get2FACode(),6)
             cTmpSecretKeyFile:=cTmpPath
@@ -249,14 +280,14 @@ return
             if (hb_FileExists(cTmpSecretKeyFile))
                 hb_FileDelete(cTmpSecretKeyFile)
             endif
-            
-            lRet:=Get2FACodeByHBOtp(@c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
+
+            lRet:=Get2FACodeByHBOtp(@c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,s_h2FAIni)
             if (lRet)
                 break
             endif
-            
-            lRet:=Get2FACodeByOathtool(@c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
-            
+
+            lRet:=Get2FACodeByOathtool(@c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,s_h2FAIni)
+
             if (lRet)
                 break
             endif
@@ -264,54 +295,54 @@ return
             MsgInfo("Invalid OTP Key: "+c2FACode,"2FA Key Code")
 
         end sequence
-    
+
     return(lRet)
 
-    static function Get2FACodeByHBOtp(c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
-        
+    static function Get2FACodeByHBOtp(c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,s_h2FAIni)
+
         local cCmd
         local cTmp2FACode
-        local cHBOtpPath        
+        local cHBOtpPath
         local cHBOtp_GCrypt
         local cHBOtp_OpenSSL
         local lRet
-        
-        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTPPATH"))
-            cHBOtpPath:=hIni["GENERAL"]["HBOTPPATH"]
-        endif        
+
+        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"HBOTPPATH"))
+            cHBOtpPath:=s_h2FAIni["GENERAL"]["HBOTPPATH"]
+        endif
         hb_Default(@cHBOtpPath,"")
-        
+
         if (Right(cHBOtpPath,1)!="\")
             cHBOtpPath+="\"
-        endif        
-        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTP_GCRYPT"))
-            cHBOtp_GCrypt:=hIni["GENERAL"]["HBOTP_GCRYPT"]
+        endif
+        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"HBOTP_GCRYPT"))
+            cHBOtp_GCrypt:=s_h2FAIni["GENERAL"]["HBOTP_GCRYPT"]
         endif
         hb_Default(@cHBOtp_GCrypt,"")
-        
-        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"HBOTP_OPENSSL"))
-            cHBOtp_OpenSSL:=hIni["GENERAL"]["HBOTP_OPENSSL"]
+
+        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"HBOTP_OPENSSL"))
+            cHBOtp_OpenSSL:=s_h2FAIni["GENERAL"]["HBOTP_OPENSSL"]
         endif
         hb_Default(@cHBOtp_OpenSSL,"")
-        
+
         DirChange(cHBOtpPath)
-        
+
         begin sequence
-            
+
             lRet:=(hb_FileExists(cHBOtpPath+cHBOtp_GCrypt).or.hb_FileExists(cHBOtpPath+cHBOtp_OpenSSL))
 
             if (!lRet)
                 break
             endif
-            
+
             if (!hb_FileExists(cHBOtpPath+cHBOtp_OpenSSL))
                 break
             endif
-            
+
             cCmd:=".\"+cHBOtp_OpenSSL+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
             hb_Run(cCmd)
             lRet:=hb_FileExists(cTmpSecretKeyFile)
-            
+
             if (lRet)
                 cTmp2FACode:=Left(hb_MemoRead(cTmpSecretKeyFile),6)
                 hb_FileDelete(cTmpSecretKeyFile)
@@ -324,11 +355,11 @@ return
             if (!hb_FileExists(cHBOtpPath+cHBOtp_GCrypt))
                 break
             endif
-            
+
             cCmd:=".\"+cHBOtp_GCrypt+" -k="+cSecretKey+" 1> "+cTmpSecretKeyFile+" 2>&1"
             hb_Run(cCmd)
             lRet:=hb_FileExists(cTmpSecretKeyFile)
-            
+
             if (!lRet)
                 break
             endif
@@ -343,27 +374,27 @@ return
 
     return(lRet)
 
-    static function Get2FACodeByOathtool(c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,hIni)
+    static function Get2FACodeByOathtool(c2FACode,cSecretKey,cTmpSecretKeyFile,cCurDir,s_h2FAIni)
 
         local cCmd
-        
+
         local cTmp2FACode
         local cCygwinPath
         local cOathtoolPath
         local cCygWinTmpSecretKeyFile
-        
+
         local lRet:=.F.
 
-        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"CYGWIN_PATH"))
-            cCygwinPath:=hIni["GENERAL"]["CYGWIN_PATH"]
+        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"CYGWIN_PATH"))
+            cCygwinPath:=s_h2FAIni["GENERAL"]["CYGWIN_PATH"]
         endif
         hb_default(@cCygwinPath,"")
         if (Right(cCygwinPath,1)!="\")
             cCygwinPath+="\"
         endif
-        
-        if (HB_HHASKEY(hIni,"GENERAL").and.HB_HHASKEY(hIni["GENERAL"],"OATH_TOOLKIT_PATH"))
-            cOathtoolPath:=hIni["GENERAL"]["OATH_TOOLKIT_PATH"]
+
+        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"OATH_TOOLKIT_PATH"))
+            cOathtoolPath:=s_h2FAIni["GENERAL"]["OATH_TOOLKIT_PATH"]
         endif
         hb_default(@cOathtoolPath,"")
         if (Right(cOathtoolPath,1)!="\")
