@@ -29,7 +29,7 @@ init Procedure NoWinKeys(lReSet)
     if (hb_FileExists(c_h2FAINI))
         s_h2FAIni:=hb_iniRead(c_h2FAINI)
     endif
-    if (.NOT.(hb_FileExists(c_h2FAINI)).or.Empty(c_h2FAINI))
+    if (.NOT.(hb_FileExists(c_h2FAINI)).or.Empty(s_h2FAIni))
         s_h2FAIni:=hb_Hash()
         s_h2FAIni["GENERAL"]:=hb_Hash()
         s_h2FAIni["GENERAL"]["FILESECRET"]:=cFileSecret
