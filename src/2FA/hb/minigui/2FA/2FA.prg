@@ -31,28 +31,91 @@ init Procedure NoWinKeys(lReSet)
     endif
     if (.NOT.(hb_FileExists(c_h2FAINI)).or.Empty(s_h2FAIni))
         s_h2FAIni:=hb_Hash()
-        s_h2FAIni["GENERAL"]:=hb_Hash()
-        s_h2FAIni["GENERAL"]["FILESECRET"]:=cFileSecret
-        s_h2FAIni["GENERAL"]["TMPPATH"]:=cTmpPath
-        s_h2FAIni["GENERAL"]["HBOTPPATH"]:="C:\2FA"
-        s_h2FAIni["GENERAL"]["HBOTP_GCRYPT"]:="hbotp_gcrypt.exe"
-        s_h2FAIni["GENERAL"]["HBOTP_OPENSSL"]:="hbotp_openssl.exe"
-        s_h2FAIni["GENERAL"]["CYGWIN_PATH"]:="C:\cygwin64\"
-        s_h2FAIni["GENERAL"]["OATH_TOOLKIT_PATH"]:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
+        s_h2FAIni["MAIN"]:=hb_Hash()
+        s_h2FAIni["MAIN"]["FILESECRET"]:=cFileSecret
+        s_h2FAIni["MAIN"]["TMPPATH"]:=cTmpPath
+        s_h2FAIni["MAIN"]["HBOTPPATH"]:="C:\2FA"
+        s_h2FAIni["MAIN"]["HBOTP_GCRYPT"]:="hbotp_gcrypt.exe"
+        s_h2FAIni["MAIN"]["HBOTP_OPENSSL"]:="hbotp_openssl.exe"
+        s_h2FAIni["MAIN"]["CYGWIN_PATH"]:="C:\cygwin64\"
+        s_h2FAIni["MAIN"]["OATH_TOOLKIT_PATH"]:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
+        s_h2FAIni["SCREENSAVER"]:=hb_Hash()
+        s_h2FAIni["SCREENSAVER"]["clock"]="C:\2FA\minigui\clock\2FAClockSaver.exe"
+        s_h2FAIni["SCREENSAVER"]["lines"]="C:\2FA\minigui\lines\2FALines.exe"
+        s_h2FAIni["SCREENSAVER"]["MurphySaver"]="C:\2FA\minigui\MurphySaver\2FAMLaws.exe"
+        s_h2FAIni["SCREENSAVER"]["PhantomDesktop"]="C:\2FA\minigui\PhantomDesktop\2FAPhantomDesktop.exe"
         s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"]:=hb_Hash()
         s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"]["NoWinKeys"]:=0
         s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\System"]:=hb_Hash()
         s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\System"]["DisableTaskMgr"]:=0
         s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"]:=hb_Hash()
         s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"]["TaskbarEndTask"]:=1
-        hb_iniWrite(c_h2FAINI,s_h2FAIni,"#@2FA.ini","#end of file",.F.)
-        s_h2FAIni:=hb_iniRead(c_h2FAINI)
+    else
+        if (!hb_HHasKey(s_h2FAIni,"MAIN"))
+            s_h2FAIni["MAIN"]:=hb_Hash()
+        endif
+        if (!hb_HHasKey(s_h2FAIni["MAIN"],"FILESECRET"))
+            s_h2FAIni["MAIN"]["FILESECRET"]:=cFileSecret
+        endif
+        if (!hb_HHasKey(s_h2FAIni["MAIN"],"TMPPATH"))
+            s_h2FAIni["MAIN"]["TMPPATH"]:=cTmpPath
+        endif
+        if (!hb_HHasKey(s_h2FAIni["MAIN"],"HBOTPPATH"))
+            s_h2FAIni["MAIN"]["HBOTPPATH"]:="C:\2FA"
+        endif
+        if (!hb_HHasKey(s_h2FAIni["MAIN"],"HBOTP_GCRYPT"))
+            s_h2FAIni["MAIN"]["HBOTP_GCRYPT"]:="hbotp_gcrypt.exe"
+        endif
+        if (!hb_HHasKey(s_h2FAIni["MAIN"],"HBOTP_OPENSSL"))
+            s_h2FAIni["MAIN"]["HBOTP_OPENSSL"]:="hbotp_openssl.exe"
+        endif
+        if (!hb_HHasKey(s_h2FAIni["MAIN"],"CYGWIN_PATH"))
+            s_h2FAIni["MAIN"]["CYGWIN_PATH"]:="C:\cygwin64\"
+        endif
+        if (!hb_HHasKey(s_h2FAIni["MAIN"],"OATH_TOOLKIT_PATH"))
+            s_h2FAIni["MAIN"]["OATH_TOOLKIT_PATH"]:="C:\cygwin64\home\"+cUser+"\oath-toolkit-2.6.9"
+        endif
+        if (!hb_HHasKey(s_h2FAIni,"SCREENSAVER"))
+            s_h2FAIni["SCREENSAVER"]:=hb_Hash()
+        endif
+        if (!hb_HHasKey(s_h2FAIni["SCREENSAVER"],"clock"))
+            s_h2FAIni["SCREENSAVER"]["clock"]="C:\2FA\minigui\clock\2FAClockSaver.exe"
+        endif
+        if (!hb_HHasKey(s_h2FAIni["SCREENSAVER"],"lines"))
+            s_h2FAIni["SCREENSAVER"]["lines"]="C:\2FA\minigui\lines\2FALines.exe"
+        endif
+        if (!hb_HHasKey(s_h2FAIni["SCREENSAVER"],"MurphySaver"))
+            s_h2FAIni["SCREENSAVER"]["MurphySaver"]="C:\2FA\minigui\MurphySaver\2FAMLaws.exe"
+        endif
+        if (!hb_HHasKey(s_h2FAIni["SCREENSAVER"],"PhantomDesktop"))
+            s_h2FAIni["SCREENSAVER"]["PhantomDesktop"]="C:\2FA\minigui\PhantomDesktop\2FAPhantomDesktop.exe"
+        endif
+        if (!hb_HHasKey(s_h2FAIni,"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"))
+            s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"]:=hb_Hash()
+        endif
+        if (!hb_HHasKey(s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"],"NoWinKeys"))
+            s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"]["NoWinKeys"]:=0
+        endif
+        if (!hb_HHasKey(s_h2FAIni,"Software\Microsoft\Windows\CurrentVersion\Policies\System"))
+            s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\System"]:=hb_Hash()
+        endif
+        if (!hb_HHasKey(s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\System"],"DisableTaskMgr"))
+            s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Policies\System"]["DisableTaskMgr"]:=0
+        endif
+        if (!hb_HHasKey(s_h2FAIni,"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"))
+            s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"]:=hb_Hash()
+        endif
+        if (!hb_HHasKey(s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"],"TaskbarEndTask"))
+            s_h2FAIni["Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"]["TaskbarEndTask"]:=1
+        endif
     endif
+    hb_iniWrite(c_h2FAINI,s_h2FAIni,"#@2FA.ini","#end of file",.F.)
+    s_h2FAIni:=hb_iniRead(c_h2FAINI)
     cRegistryKey:="NoWinKeys"
     if (aScan(s_aRegKeys,{|x|x[4]==cRegistryKey})==0)
         cRegistryPath:="Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
         cRegistryType:="N"
-        if (HB_HHASKEY(s_h2FAIni,cRegistryPath).and.HB_HHASKEY(s_h2FAIni[cRegistryPath],cRegistryKey))
+        if (hb_HHasKey(s_h2FAIni,cRegistryPath).and.hb_HHasKey(s_h2FAIni[cRegistryPath],cRegistryKey))
             aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,val(s_h2FAIni[cRegistryPath][cRegistryKey])})
         else
             aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,0})
@@ -62,7 +125,7 @@ init Procedure NoWinKeys(lReSet)
     if (aScan(s_aRegKeys,{|x|x[4]==cRegistryKey})==0)
         cRegistryPath:="Software\Microsoft\Windows\CurrentVersion\Policies\System"
         cRegistryType:="N"
-        if (HB_HHASKEY(s_h2FAIni,cRegistryPath).and.HB_HHASKEY(s_h2FAIni[cRegistryPath],cRegistryKey))
+        if (hb_HHasKey(s_h2FAIni,cRegistryPath).and.hb_HHasKey(s_h2FAIni[cRegistryPath],cRegistryKey))
             aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,val(s_h2FAIni[cRegistryPath][cRegistryKey])})
         else
             aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,0})
@@ -72,7 +135,7 @@ init Procedure NoWinKeys(lReSet)
     if (aScan(s_aRegKeys,{|x|x[4]==cRegistryKey})==0)
         cRegistryPath:="Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
         cRegistryType:="N"
-        if (HB_HHASKEY(s_h2FAIni,cRegistryPath).and.HB_HHASKEY(s_h2FAIni[cRegistryPath],cRegistryKey))
+        if (hb_HHasKey(s_h2FAIni,cRegistryPath).and.hb_HHasKey(s_h2FAIni[cRegistryPath],cRegistryKey))
             aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,1,val(s_h2FAIni[cRegistryPath][cRegistryKey])})
         else
             aAdd(s_aRegKeys,{HKEY_CURRENT_USER,cRegistryPath,cRegistryKey,cRegistryType,0,1})
@@ -88,7 +151,10 @@ static function __NoWinKeys(lReSet)
         xValue:=s_aRegKeys[nReg][5]
         if (IsRegistryKey(s_aRegKeys[nReg][1],s_aRegKeys[nReg][2]))
             if (!lReSet)
-                s_aRegKeys[nReg][6]:=GetRegistryValue(s_aRegKeys[nReg][1],s_aRegKeys[nReg][2],s_aRegKeys[nReg][3],s_aRegKeys[nReg][4])
+                xValue:=GetRegistryValue(s_aRegKeys[nReg][1],s_aRegKeys[nReg][2],s_aRegKeys[nReg][3],s_aRegKeys[nReg][4])
+                if (xValue!=s_aRegKeys[nReg][5])
+                    s_aRegKeys[nReg][6]:=xValue
+                endif
             else
                 xValue:=s_aRegKeys[nReg][6]
             endif
@@ -228,13 +294,42 @@ return
 //2FA Code Validation Begin
 *--------------------------------------------------------*
     exit function Valid2FACode()
+        local aRandom
+        local aScreenSavers
+        local cExeName
         local lRet:=.T.
+        local lContinue
+        local nRandom,nScreenSaver,nScreenSavers
         if (type("lValid2FAExec")!="L")
             public lValid2FAExec:=.T.
             lRet:=__Valid2FACode()
             if (!lRet)
                 __NoWinKeys(.T.)
-                ShellExecute(nil,"open",ExeName(),"/s",nil,SW_SHOWMINIMIZED)
+                if (hb_HHasKey(s_h2FAIni,"SCREENSAVER"))
+                    aScreenSavers:=hb_HKeys(s_h2FAIni["SCREENSAVER"])
+                    nScreenSavers:=Len(aScreenSavers)
+                    if (nScreenSavers>0)
+                        aRandom:=Array(0)
+                        lContinue:=.T.
+                        while (lContinue)
+                            nScreenSaver:=Random(nScreenSavers)
+                            if (aScan(aRandom,{|nRandom|(nRandom==nScreenSaver)})==0)
+                                aAdd(aRandom,nScreenSaver)
+                                cExeName:=s_h2FAIni["SCREENSAVER"][aScreenSavers[nScreenSaver]]
+                                lContinue:=(!hb_FileExists(cExeName))
+                                if (!lContinue)
+                                    exit
+                                endif
+                            endif
+                            nRandom:=Len(aRandom)
+                            lContinue:=(nRandom>=1).and.(nRandom<=4)
+                        end while
+                    endif
+                endif
+                if (empty(cExeName))
+                    cExeName:=ExeName()
+                endif
+                ShellExecute(nil,"open",cExeName,"/s",nil,SW_SHOWMINIMIZED)
             else
                 __NoWinKeys(.T.)
             endif
@@ -253,16 +348,16 @@ return
 
         begin sequence
 
-            if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"FILESECRET"))
-                cFileSecret:=s_h2FAIni["GENERAL"]["FILESECRET"]
+            if (hb_HHasKey(s_h2FAIni,"MAIN").and.hb_HHasKey(s_h2FAIni["MAIN"],"FILESECRET"))
+                cFileSecret:=s_h2FAIni["MAIN"]["FILESECRET"]
             endif
 
             if (!hb_FileExists(cFileSecret))
                 break
             endif
 
-            if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"TMPPATH"))
-                cTmpPath:=s_h2FAIni["GENERAL"]["TMPPATH"]
+            if (hb_HHasKey(s_h2FAIni,"MAIN").and.hb_HHasKey(s_h2FAIni["MAIN"],"TMPPATH"))
+                cTmpPath:=s_h2FAIni["MAIN"]["TMPPATH"]
             endif
             if (Right(cTmpPath,1)!="\")
                 cTmpPath+="\"
@@ -307,21 +402,21 @@ return
         local cHBOtp_OpenSSL
         local lRet
 
-        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"HBOTPPATH"))
-            cHBOtpPath:=s_h2FAIni["GENERAL"]["HBOTPPATH"]
+        if (hb_HHasKey(s_h2FAIni,"MAIN").and.hb_HHasKey(s_h2FAIni["MAIN"],"HBOTPPATH"))
+            cHBOtpPath:=s_h2FAIni["MAIN"]["HBOTPPATH"]
         endif
         hb_Default(@cHBOtpPath,"")
 
         if (Right(cHBOtpPath,1)!="\")
             cHBOtpPath+="\"
         endif
-        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"HBOTP_GCRYPT"))
-            cHBOtp_GCrypt:=s_h2FAIni["GENERAL"]["HBOTP_GCRYPT"]
+        if (hb_HHasKey(s_h2FAIni,"MAIN").and.hb_HHasKey(s_h2FAIni["MAIN"],"HBOTP_GCRYPT"))
+            cHBOtp_GCrypt:=s_h2FAIni["MAIN"]["HBOTP_GCRYPT"]
         endif
         hb_Default(@cHBOtp_GCrypt,"")
 
-        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"HBOTP_OPENSSL"))
-            cHBOtp_OpenSSL:=s_h2FAIni["GENERAL"]["HBOTP_OPENSSL"]
+        if (hb_HHasKey(s_h2FAIni,"MAIN").and.hb_HHasKey(s_h2FAIni["MAIN"],"HBOTP_OPENSSL"))
+            cHBOtp_OpenSSL:=s_h2FAIni["MAIN"]["HBOTP_OPENSSL"]
         endif
         hb_Default(@cHBOtp_OpenSSL,"")
 
@@ -385,16 +480,16 @@ return
 
         local lRet:=.F.
 
-        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"CYGWIN_PATH"))
-            cCygwinPath:=s_h2FAIni["GENERAL"]["CYGWIN_PATH"]
+        if (hb_HHasKey(s_h2FAIni,"MAIN").and.hb_HHasKey(s_h2FAIni["MAIN"],"CYGWIN_PATH"))
+            cCygwinPath:=s_h2FAIni["MAIN"]["CYGWIN_PATH"]
         endif
         hb_default(@cCygwinPath,"")
         if (Right(cCygwinPath,1)!="\")
             cCygwinPath+="\"
         endif
 
-        if (HB_HHASKEY(s_h2FAIni,"GENERAL").and.HB_HHASKEY(s_h2FAIni["GENERAL"],"OATH_TOOLKIT_PATH"))
-            cOathtoolPath:=s_h2FAIni["GENERAL"]["OATH_TOOLKIT_PATH"]
+        if (hb_HHasKey(s_h2FAIni,"MAIN").and.hb_HHasKey(s_h2FAIni["MAIN"],"OATH_TOOLKIT_PATH"))
+            cOathtoolPath:=s_h2FAIni["MAIN"]["OATH_TOOLKIT_PATH"]
         endif
         hb_default(@cOathtoolPath,"")
         if (Right(cOathtoolPath,1)!="\")
@@ -496,6 +591,7 @@ return
         ON LOSTFOCUS (IF(Empty(Form_2FA.Text_1.Value),Form_2FA.Text_1.SetFocus(),nil))
 
         ON KEY ESCAPE ACTION Form_2FA.Text_1.SetFocus()
+        ON INIT Form_2FA.Text_1.SetFocus()
 
       END WINDOW
 
