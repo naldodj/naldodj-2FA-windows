@@ -9,7 +9,7 @@ if not "%~1"=="" (
     rem Se existir um script em PowerShell a ser executado, executa-o
     if exist "%1" (
         rem Executar o comando e redirecionar a saída para o arquivo de log
-        start pwsh -executionPolicy bypass -file %1
+        start /b /realtime /min /wait pwsh -WindowStyle Hidden -NoProfileLoadTime -NoProfile -NonInteractive -NoLogo -STA -Login -NoExit -executionPolicy bypass -file %1
     )
 )
 
@@ -23,6 +23,7 @@ rem Gerar um número aleatório entre 0 e 3
 set /a rand=%random% %% 4
 
 rem Executar a aplicação aleatória com o parâmetro /s
-start "" "!apps[%rand%]!" /s
+start "" "!apps[%rand%]!" /s /b /realtime /min /wait
+exit
 
 endlocal
