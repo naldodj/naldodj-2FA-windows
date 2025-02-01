@@ -518,7 +518,7 @@ try {
                     # Se o script terminar normalmente, a flag é definida
                     $script:NormalExit = $true
                     #############################################################################################################################################
-                    [System.Windows.Forms.MessageBox]::Show("Código 2FA válido. Acesso permitido.")
+                    #[System.Windows.Forms.MessageBox]::Show("Código 2FA válido. Acesso permitido.")
                     $form.Close()
                 } else {
                     #############################################################################################################################################
