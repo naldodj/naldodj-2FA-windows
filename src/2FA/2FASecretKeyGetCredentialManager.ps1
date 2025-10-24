@@ -43,10 +43,67 @@ if (-not $createdNewMutexScript) {
 #############################################################################################################################################
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing, "System.ComponentModel.Primitives", "System.Windows.Forms.Primitives"
 #############################################################################################################################################
+#############################################################################################################################################
 Add-Type -TypeDefinition @"
 using System;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+
+public class AltTabBlocker {
+    private const int WH_KEYBOARD_LL = 13;
+    private const int WM_KEYDOWN = 0x0100;
+    private const int WM_KEYUP   = 0x0101;
+    private const int VK_TAB     = 0x09;
+    private const int VK_MENU    = 0x12; // Alt
+
+    private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+    private static LowLevelKeyboardProc _proc = HookCallback;
+    private static IntPtr _hookID = IntPtr.Zero;
+    private static bool _altPressed = false;
+
+    public static bool Install() {
+        _hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
+        return _hookID != IntPtr.Zero;
+    }
+
+    public static void Uninstall() {
+        if (_hookID != IntPtr.Zero) {
+            UnhookWindowsHookEx(_hookID);
+            _hookID = IntPtr.Zero;
+        }
+    }
+
+    private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
+        if (nCode >= 0) {
+            int vkCode = Marshal.ReadInt32(lParam);
+
+            if (wParam == (IntPtr)WM_KEYDOWN) {
+                if (vkCode == VK_MENU) {
+                    _altPressed = true;
+                }
+                else if (vkCode == VK_TAB && _altPressed) {
+                    return (IntPtr)1; // BLOQUEIA ALT+TAB
+                }
+            }
+            else if (wParam == (IntPtr)WM_KEYUP) {
+                if (vkCode == VK_MENU) {
+                    _altPressed = false;
+                }
+            }
+        }
+        return CallNextHookEx(_hookID, nCode, wParam, lParam);
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+    [DllImport("user32.dll")]
+    private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+}
 
 public class CustomForm : Form {
     private const int WM_NCLBUTTONDBLCLK = 0xA3;
@@ -398,6 +455,12 @@ try {
             $credName = [System.Net.Dns]::GetHostName()
             #############################################################################################################################################
 
+            # 1. Instale o hook ANTES de mostrar o form
+            $hookInstalled = [AltTabBlocker]::Install()
+            if (-not $hookInstalled) {
+                Write-Warning "Falha ao instalar o hook de teclado. Alt+Tab pode não ser bloqueado."
+            }
+
             #############################################################################################################################################
             # Cria a janela
             $form = New-Object CustomForm
@@ -471,9 +534,11 @@ try {
             })
 
             # Evento para impedir o fechamento da janela
+            $2FACode = $false
             $form.Add_FormClosing({
-                $eventArgs = [System.Windows.Forms.FormClosingEventArgs]::new([System.Windows.Forms.CloseReason]::None, $false)
-                $eventArgs.Cancel = $true
+                $eventArgs = [System.Windows.Forms.FormClosingEventArgs]::new([System.Windows.Forms.CloseReason]::None, -not $2FACode)
+                $eventArgs.Cancel = -not $2FACode
+                $_.Cancel = -not $2FACode
             })
 
             # Adiciona um campo de texto para o código 2FA
@@ -561,19 +626,15 @@ try {
                 if ($e.KeyCode -eq [System.Windows.Forms.Keys]::Enter) {
                     $button.PerformClick()
                 }
-            })
-            #############################################################################################################################################
-
-            #############################################################################################################################################
-            # Evento para capturar Alt+F4
-            $form.Add_KeyDown({
-                param($sender, $e)
+                # Evento para capturar Alt+F4
                 if ($e.Alt -and $e.KeyCode -eq [System.Windows.Forms.Keys]::F4) {
                     $e.SuppressKeyPress = $true
                     $form.Focus()
                     $textBox.Focus()
                 }
             })
+            #############################################################################################################################################
+
             #############################################################################################################################################
             # Timer para capturar e suprimir eventos de tecla
             # Cria um objeto Mutex
@@ -663,6 +724,8 @@ try {
             #############################################################################################################################################
 
         } finally {
+
+            [AltTabBlocker]::Uninstall()
 
             #############################################################################################################################################
             # Dispose dos objetos
