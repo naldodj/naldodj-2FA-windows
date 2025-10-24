@@ -21,7 +21,7 @@ if not "%~1"=="" (
     rem Se existir um script em PowerShell a ser executado, executa-o
     if exist "%1" (
         rem Executar o comando e redirecionar a saída para o arquivo de log
-        start /b /realtime /min pwsh -WindowStyle Hidden -NoProfileLoadTime -NoProfile -NonInteractive -NoLogo -STA -Login -executionPolicy bypass -file %1
+        cmd /c start /separate /realtime /min pwsh -WindowStyle Hidden -NoProfileLoadTime -NoProfile -NonInteractive -NoLogo -STA -Login -executionPolicy bypass -file %1 > "C:\2FA\2FASecretKeyRunCredentialManager.log" 2>&1
     )
 )
 

@@ -1,3 +1,1 @@
-pwsh -executionPolicy bypass -file "C:\tools\2FA\2FASecretKeyGetCredentialManager.ps1" > "C:\2FA\2FASecretKeyRunCredentialManager.log" 2>&1
-
- 
+cmd /c start /separate /realtime /min pwsh -WindowStyle Hidden -NoProfileLoadTime -NoProfile -NonInteractive -NoLogo -STA -Login -executionPolicy bypass -file "C:\tools\2FA\2FASecretKeyGetCredentialManager.ps1" > "C:\2FA\2FASecretKeyRunCredentialManager.log" 2>&1

@@ -16,6 +16,26 @@
     * Github: https://github.com/naldodj
 #>
 
+# =========================================================
+# Evita múltiplas execuções simultâneas do mesmo script
+# =========================================================
+# Controle de instância única do script
+$scriptName = [System.IO.Path]::GetFileNameWithoutExtension($MyInvocation.MyCommand.Name)
+$mutexName  = "Global\" + $scriptName   # remova "Global\" se não quiser exigir privilégio global
+
+# inicializa a variável de saída antes de passar por referência
+$createdNewMutexScript = $false
+
+# tenta criar e já adquirir o mutex (initiallyOwned = $true)
+$mutexScript = New-Object System.Threading.Mutex($true, $mutexName, [ref]$createdNewMutexScript)
+
+if (-not $createdNewMutexScript) {
+    Write-Host "⚠️ O script '$scriptName' já está em execução. Saindo."
+    # faz Dispose caso precise (não é dono), mas New-Object retornará objeto existente; safe dispose
+    if ($mutexScript) { $mutexScript.Dispose() }
+    exit 1
+}
+
 # Redireciona saída padrão e de erro
 [Console]::SetOut([IO.TextWriter]::Null)
 [Console]::SetError([IO.TextWriter]::Null)
@@ -676,6 +696,16 @@ try {
 
     }
 } finally {
+    # Libera o mutex ao finalizar
+    try {
+        if ($mutexScript -and $createdNewMutexScript) {
+            $mutexScript.ReleaseMutex()
+        }
+    } catch {
+        # ignore erros ao liberar
+    } finally {
+        if ($mutexScript) { $mutexScript.Dispose() }
+    }
     if ($script:NormalExit) {
         #############################################################################################################################################
         Clear
