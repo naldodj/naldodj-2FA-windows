@@ -2,6 +2,8 @@
 setlocal enabledelayedexpansion
 
 rem Diretório base onde as aplicações estão localizadas
+set base=C:\2FA
+cd %base%
 set baseDir=.
 
 rem Array de aplicações com paths completos
